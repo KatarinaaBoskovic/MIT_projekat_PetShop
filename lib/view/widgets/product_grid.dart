@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petshop/models/product.dart';
+import 'package:petshop/view/product_details_screen.dart';
 import 'package:petshop/view/widgets/product_card.dart';
 
 class ProductGrid extends StatelessWidget {
@@ -19,7 +21,13 @@ class ProductGrid extends StatelessWidget {
       itemBuilder: (context,index){
         final product =products[index];
         return GestureDetector(
-          onTap: (){},
+          onTap: ()=>Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context)=> ProductDetailsScreen(
+              product: product,
+
+            ),),
+            ),
           child: ProductCard(product: product),
         );
       },

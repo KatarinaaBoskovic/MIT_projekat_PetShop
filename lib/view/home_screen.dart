@@ -4,6 +4,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/view/all_product_screen.dart';
+import 'package:petshop/view/cart_screen.dart';
 import 'package:petshop/view/widgets/category_chips.dart';
 import 'package:petshop/view/widgets/custom_search_bar.dart';
 import 'package:petshop/view/widgets/product_grid.dart';
@@ -52,7 +53,7 @@ padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),              child: Row(
                   ),
                   //cart button
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () =>Get.to(()=>const CartScreen()),
                     icon: const Icon(Icons.shopping_bag_outlined),
                   ),
                   //theme button

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 
 class CustomSearchBar extends StatelessWidget {

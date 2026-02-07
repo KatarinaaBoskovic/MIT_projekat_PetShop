@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/view/product_details_screen.dart';
 import 'package:petshop/view/widgets/product_card.dart';

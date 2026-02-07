@@ -110,16 +110,18 @@ class ProductCard extends StatelessWidget {
                 SizedBox(height: screenWidth*0.01,),
                 Text(
                   product.category,
+                    
                   style: AppTextStyle.withColor(
                         AppTextStyle.bodyMedium,
                         isDark? Colors.grey[400]!: Colors.grey[600]!,
                       ),
                 ),
                 SizedBox(height: screenWidth*0.01,),
-                Row(
+                Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+'${product.price.toStringAsFixed(0)} RSD',
                       style :AppTextStyle.withColor(
                         AppTextStyle.withWeight(
                           AppTextStyle.bodyLarge,
@@ -128,12 +130,12 @@ class ProductCard extends StatelessWidget {
                         Theme.of(context).textTheme.bodyLarge!.color!,
                       ),
                     ),
-                    if(product.oldPrice!=null)...[
+                    if (product.oldPrice != null && product.oldPrice! > product.price)...[
                       SizedBox(width: screenWidth*0.01),
                       Text(
-                      '\$${product.oldPrice!.toStringAsFixed(2)}',
-                      style :AppTextStyle.withColor(
-                        AppTextStyle.bodySmall,
+'${product.oldPrice!.toStringAsFixed(0)} RSD',                      
+style :AppTextStyle.withColor(
+                        AppTextStyle.bodySmaller,
                         isDark? Colors.grey[400]!: Colors.grey[600]!,
                       ).copyWith(
                         decoration: TextDecoration.lineThrough,
@@ -151,6 +153,7 @@ class ProductCard extends StatelessWidget {
   }
   //calculate discount
   int calculateDiscount(double currentPrice, double oldPrice){
+    if (oldPrice <= 0 || currentPrice >= oldPrice) return 0;
     return (((oldPrice-currentPrice)/oldPrice)*100).round();
   }
 }

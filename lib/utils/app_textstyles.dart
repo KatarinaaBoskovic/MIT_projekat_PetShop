@@ -18,7 +18,10 @@ class AppTextStyle {
     fontSize: 18,
     fontWeight: FontWeight.w600,
   );
-
+static TextStyle h4 = GoogleFonts.poppins(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+  );
   //body text
 
   static TextStyle bodyLarge = GoogleFonts.poppins(
@@ -32,6 +35,10 @@ class AppTextStyle {
   );
   static TextStyle bodySmall = GoogleFonts.poppins(
     fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+  static TextStyle bodySmaller = GoogleFonts.poppins(
+    fontSize: 11,
     fontWeight: FontWeight.w400,
   );
 

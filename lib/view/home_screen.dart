@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
 import 'package:petshop/controllers/theme_controller.dart';
+import 'package:petshop/view/all_product_screen.dart';
 import 'package:petshop/view/widgets/category_chips.dart';
 import 'package:petshop/view/widgets/custom_search_bar.dart';
 import 'package:petshop/view/widgets/product_grid.dart';
@@ -19,8 +21,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             //header section
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),              child: Row(
                 children: [
                   CircleAvatar(
                     radius: 20,
@@ -78,7 +79,7 @@ class HomeScreen extends StatelessWidget {
             const SaleBanner(),
             //popular product
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -87,7 +88,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
-                    onTap: (){},
+                    onTap: ()=>Get.to(()=>const AllProductsScreen()),
                     child: Text(
                       'See All',
                       style: TextStyle(
@@ -98,6 +99,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             //product grid
             const Expanded(child: ProductGrid()),
           ],

@@ -8,8 +8,8 @@ class SaleBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+    margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),      
+    padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(12),
@@ -18,12 +18,14 @@ class SaleBanner extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Get Your',
-                  style: AppTextStyle.withColor(AppTextStyle.h3, Colors.white),
+                  style: AppTextStyle.withColor(AppTextStyle.h4, Colors.white),
                 ),
+                
                 Text(
                   'Special Sale',
                   style: AppTextStyle.withColor(
@@ -33,7 +35,7 @@ class SaleBanner extends StatelessWidget {
                 ),
                 Text(
                   'Up to 40%',
-                  style: AppTextStyle.withColor(AppTextStyle.h3, Colors.white),
+                  style: AppTextStyle.withColor(AppTextStyle.h4, Colors.white),
                 ),
               ],
             ),
@@ -46,8 +48,9 @@ class SaleBanner extends StatelessWidget {
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12
+                      horizontal: 12,
+                      vertical: 10,
+                       
                       ),  
                   ),
                   child: Text(

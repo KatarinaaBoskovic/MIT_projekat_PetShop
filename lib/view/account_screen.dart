@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/settings_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class AccountScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () =>Get.to(()=>const SettingsScreen()),
             icon: Icon(
               Icons.settings_outlined,
               color: isDark ? Colors.white : Colors.black,

@@ -4,6 +4,7 @@ import 'package:get/state_manager.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/view/all_product_screen.dart';
 import 'package:petshop/view/cart_screen.dart';
+import 'package:petshop/view/notifications/view/notifications_screen.dart';
 import 'package:petshop/view/widgets/category_chips.dart';
 import 'package:petshop/view/widgets/custom_search_bar.dart';
 import 'package:petshop/view/widgets/product_grid.dart';
@@ -47,7 +48,7 @@ padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),              child: Row(
                   Spacer(),
                   //notification icon
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => Get.to(()=> NotificationsScreen()),
                     icon: const Icon(Icons.notifications_outlined),
                   ),
                   //cart button

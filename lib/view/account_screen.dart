@@ -4,6 +4,7 @@ import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/my_orders/view/screens/my_orders_screen.dart';
 import 'package:petshop/view/settings_screen.dart';
+import 'package:petshop/view/shipping_address/shipping_address_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -147,7 +148,7 @@ class AccountScreen extends StatelessWidget {
                 } else if (item['title'] == 'My Orders') {
                   Get.to(()=> MyOrdersScreen());
                 } else if (item['title'] == 'Shipping Address') {
-                  //navigation to shipping address screen
+                  Get.to(()=>  ShippingAddressScreen());
                 } else if (item['title'] == 'Help Center') {
                   //navigation to help center screen
                 }

@@ -22,7 +22,7 @@ class AppThemes {
     cardColor: Colors.white,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: const Color(0xFF4DB6AC),
+      selectedItemColor: Color(0xFF4DB6AC),
       unselectedItemColor: Colors.grey,
     ),
 
@@ -34,7 +34,7 @@ static final dark = ThemeData(
     scaffoldBackgroundColor: const Color(0xFF121212),
     brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(
-      backgroundColor:  const Color(0xFF121212),
+      backgroundColor:  Color(0xFF121212),
       elevation: 0,
       iconTheme: IconThemeData(
         color: Colors.white,
@@ -49,7 +49,7 @@ static final dark = ThemeData(
     cardColor: const Color(0xFF1E1E1E),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Color(0xFF1E1E1E),
-      selectedItemColor: const Color(0xFF4DB6AC),
+      selectedItemColor: Color(0xFF4DB6AC),
       unselectedItemColor: Colors.grey,
     ),
 

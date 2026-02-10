@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/edit_profile/views/screens/edit_profile_screen.dart';
+import 'package:petshop/view/help_center/views/screens/help_center_screen.dart';
 import 'package:petshop/view/my_orders/view/screens/my_orders_screen.dart';
 import 'package:petshop/view/settings_screen.dart';
 import 'package:petshop/view/shipping_address/shipping_address_screen.dart';
@@ -151,7 +152,7 @@ class AccountScreen extends StatelessWidget {
                 } else if (item['title'] == 'Shipping Address') {
                   Get.to(()=>  ShippingAddressScreen());
                 } else if (item['title'] == 'Help Center') {
-                  //navigation to help center screen
+                  Get.to(()=>const  HelpCenterScreen());
                 }
               },
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/edit_profile/views/screens/edit_profile_screen.dart';
 import 'package:petshop/view/my_orders/view/screens/my_orders_screen.dart';
 import 'package:petshop/view/settings_screen.dart';
 import 'package:petshop/view/shipping_address/shipping_address_screen.dart';
@@ -78,7 +79,7 @@ class AccountScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () =>Get.to(()=>const EditProfileScreen()),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               side: BorderSide(color: isDark ? Colors.white70 : Colors.black12),

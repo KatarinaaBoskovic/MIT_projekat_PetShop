@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/privacy_policy/views/screens/privacy_policy_screen.dart';
+import 'package:petshop/view/terms_of_service/views/screens/terms_of_service_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -53,12 +55,14 @@ class SettingsScreen extends StatelessWidget {
                 'Privacy Policy',
                 'View our privacy policy',
                 Icons.privacy_tip_outlined,
+                onTap: ()=>Get.to(()=>const PrivacyPolicyScreen()),
               ),
               _buildNavigationTile(
                 context,
                 'Terms of Service',
                 'Read our terms of service',
                 Icons.description_outlined,
+                onTap: ()=>Get.to(()=>const TermsOfServiceScreen()),
               ),
             ]),
             _buildSection(context, 'About', [
@@ -197,45 +201,48 @@ class SettingsScreen extends StatelessWidget {
     String title,
     String subtitle,
     IconData icon,
+    {VoidCallback? onTap}
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.2)
-                : Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.2)
+                  : Colors.grey.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          leading: Icon(icon, color: Theme.of(context).primaryColor),
+          title: Text(
+            title,
+            style: AppTextStyle.withColor(
+              AppTextStyle.bodyMedium,
+              Theme.of(context).textTheme.bodyLarge!.color!,
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).primaryColor),
-        title: Text(
-          title,
-          style: AppTextStyle.withColor(
-            AppTextStyle.bodyMedium,
-            Theme.of(context).textTheme.bodyLarge!.color!,
+          subtitle: Text(
+            subtitle,
+            style: AppTextStyle.withColor(
+              AppTextStyle.bodySmall,
+              isDark ? Colors.grey[400]! : Colors.grey[600]!,
+            ),
+          ),
+          trailing: Icon(
+            Icons.chevron_right,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
           ),
         ),
-        subtitle: Text(
-          subtitle,
-          style: AppTextStyle.withColor(
-            AppTextStyle.bodySmall,
-            isDark ? Colors.grey[400]! : Colors.grey[600]!,
-          ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: isDark ? Colors.grey[400] : Colors.grey[600],
-        ),
-        onTap: () {},
       ),
     );
   }

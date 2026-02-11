@@ -5,30 +5,46 @@ import 'package:petshop/view/main_screen.dart';
 import 'package:petshop/view/onboarding_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   SplashScreen({super.key});
 
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
   final AuthController authController = Get.find<AuthController>();
 
   @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  void _initializeApp() async {
+    // Wait for Firebase auth state to be determined
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    // Navigate based on auth state
+    if (authController.isFirstTime) {
+      Get.off(() =>const OnboardingScreen());
+    } else if (authController.isLoggedIn) {
+      Get.off(() =>const MainScreen());
+    } else {
+      Get.off(() => SinginScreen());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-// Navigacija na osnovu stanja autentifikacije nakon 2.5 sekunde
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (authController.isFirstTime) {
-        Get.off(() => const OnboardingScreen());
-      } else if (authController.isLoggedIn) {
-        Get.off(() => const MainScreen());
-      } else {
-        Get.off(() => SinginScreen());
-      }
-    });
+    
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
-            end: AlignmentGeometry.bottomRight,
+            end: Alignment.bottomRight,
             colors: [
               Theme.of(context).primaryColor,
               Theme.of(context).primaryColor.withValues(alpha: 0.8),

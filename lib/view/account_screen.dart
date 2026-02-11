@@ -27,7 +27,7 @@ class AccountScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () =>Get.to(()=>const SettingsScreen()),
+            onPressed: () => Get.to(() => const SettingsScreen()),
             icon: Icon(
               Icons.settings_outlined,
               color: isDark ? Colors.white : Colors.black,
@@ -80,7 +80,7 @@ class AccountScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           OutlinedButton(
-            onPressed: () =>Get.to(()=>const EditProfileScreen()),
+            onPressed: () => Get.to(() => const EditProfileScreen()),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               side: BorderSide(color: isDark ? Colors.white70 : Colors.black12),
@@ -148,11 +148,11 @@ class AccountScreen extends StatelessWidget {
                 if (item['title'] == 'Logout') {
                   _showLogoutDialog(context);
                 } else if (item['title'] == 'My Orders') {
-                  Get.to(()=> MyOrdersScreen());
+                  Get.to(() => MyOrdersScreen());
                 } else if (item['title'] == 'Shipping Address') {
-                  Get.to(()=>  ShippingAddressScreen());
+                  Get.to(() => ShippingAddressScreen());
                 } else if (item['title'] == 'Help Center') {
-                  Get.to(()=>const  HelpCenterScreen());
+                  Get.to(() => const HelpCenterScreen());
                 }
               },
             ),
@@ -195,7 +195,6 @@ class AccountScreen extends StatelessWidget {
                 AppTextStyle.bodyMedium,
                 isDark ? Colors.grey[400]! : Colors.grey[600]!,
               ),
-              
             ),
             const SizedBox(height: 24),
             Row(
@@ -224,11 +223,52 @@ class AccountScreen extends StatelessWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final AuthController authController =
                           Get.find<AuthController>();
-                      authController.logout();
-                      Get.offAll(() => SinginScreen());
+
+                      //show loading indicator
+                      Get.dialog(
+                        const Center(child: CircularProgressIndicator()),
+                        barrierDismissible: false,
+                      );
+
+                      try {
+                        final result = await authController.signOut();
+
+                        // Close loading dialog
+                        Get.back();
+
+                        if (result.success) {
+                          Get.snackbar(
+                            'Success',
+                            result.message,
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
+
+                          Get.offAll(() => SinginScreen());
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            result.message,
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
+                      } catch (e) {
+                        //close loading dialog
+                        Get.back();
+                        Get.snackbar(
+                          'Error',
+                          'An unexpected error occurred. Please try again.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,

@@ -7,6 +7,7 @@ import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/utils/app_themes.dart';
 import 'package:petshop/view/splash_screen.dart';
 
+
 void main() async {
   await GetStorage.init();
   Get.put(ThemeController());

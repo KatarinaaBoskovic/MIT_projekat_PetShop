@@ -6,6 +6,128 @@ class FirestoreDataSeeder {
   // Seed all data
   static Future<void> seedAllData() async {
     await seedProducts();
+    await seedCategories();
+  }
+
+  //Add sample categories to Firestore
+  static Future<void> seedCategories() async {
+    final sampleCategories = [
+      {
+        'name': 'Food',
+        'displayName': 'Food',
+        'description': 'Dry and wet food for pets',
+        'isActive': true,
+        'sortOrder': 1,
+        'subcategories': [
+          'Dry Food',
+          'Wet Food',
+          'Treats',
+          'Puppy Food',
+          'Kitten Food',
+        ],
+        'metadata': {'color': '#4CAF50', 'icon': 'food'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      {
+        'name': 'Care',
+        'displayName': 'Care',
+        'description': 'Pet care and grooming products',
+        'isActive': true,
+        'sortOrder': 2,
+        'subcategories': [
+          'Shampoo',
+          'Brushes',
+          'Nail Clippers',
+          'Hygiene',
+          'Dental Care',
+        ],
+        'metadata': {'color': '#FF9800', 'icon': 'care'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      {
+        'name': 'Equipment',
+        'displayName': 'Equipment',
+        'description': 'Beds, cages and essential equipment',
+        'isActive': true,
+        'sortOrder': 3,
+        'subcategories': ['Beds', 'Crates', 'Carriers', 'Bowls', 'Leashes'],
+        'metadata': {'color': '#2196F3', 'icon': 'equipment'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      {
+        'name': 'Clothes',
+        'displayName': 'Clothes',
+        'description': 'Clothing and apparel for pets',
+        'isActive': true,
+        'sortOrder': 4,
+        'subcategories': [
+          'Jackets',
+          'Sweaters',
+          'Raincoats',
+          'Costumes',
+          'Boots',
+        ],
+        'metadata': {'color': '#E91E63', 'icon': 'clothes'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      {
+        'name': 'Toys',
+        'displayName': 'Toys',
+        'description': 'Fun toys for pets',
+        'isActive': true,
+        'sortOrder': 5,
+        'subcategories': [
+          'Chew Toys',
+          'Rope Toys',
+          'Balls',
+          'Interactive Toys',
+          'Plush Toys',
+        ],
+        'metadata': {'color': '#9C27B0', 'icon': 'toys'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      {
+        'name': 'Health',
+        'displayName': 'Health',
+        'description': 'Health and wellness products',
+        'isActive': true,
+        'sortOrder': 6,
+        'subcategories': [
+          'Vitamins',
+          'Supplements',
+          'Flea & Tick',
+          'First Aid',
+          'Calming Products',
+        ],
+        'metadata': {'color': '#F44336', 'icon': 'health'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+    ];
+    try {
+      // Check if categories already exist
+      final existingCategories = await _firestore
+          .collection('categories')
+          .limit(1)
+          .get();
+
+      if (existingCategories.docs.isEmpty) {
+        // Add sample categories only if collection is empty
+        for (var category in sampleCategories) {
+          await _firestore.collection('categories').add(category);
+        }
+        print('Sample categories added to Firestore successfully!');
+      } else {
+        print('Categories already exist in Firestore. Skipping seed data.');
+      }
+    } catch (e) {
+      print('Error seeding categories: $e');
+    }
   }
 
   // Add sample products to Firestore
@@ -59,9 +181,7 @@ class FirestoreDataSeeder {
         'price': 2300,
         'oldPrice': 3700,
         'currency': 'RSD',
-        'images': [
-          'assets/images/product3.jpg',
-        ],
+        'images': ['assets/images/product3.jpg'],
         'primaryImage': 'assets/images/product3.jpg',
         'brand': 'Spark Paws',
         'sku': 'PS-SP-hoodie-001',
@@ -100,9 +220,7 @@ class FirestoreDataSeeder {
         'price': 1030,
         'oldPrice': 1700,
         'currency': 'RSD',
-        'images': [
-          'assets/images/product2.jpg',
-        ],
+        'images': ['assets/images/product2.jpg'],
         'primaryImage': 'assets/images/product2.jpg',
         'brand': 'Zolux',
         'sku': 'PS-ZLX-ROPE-001',
@@ -140,9 +258,7 @@ class FirestoreDataSeeder {
         'price': 13500,
         'oldPrice': 15600,
         'currency': 'RSD',
-        'images': [
-          'assets/images/products2.jpg', 
-        ],
+        'images': ['assets/images/products2.jpg'],
         'primaryImage': 'assets/images/products2.jpg',
         'brand': 'Orijen',
         'sku': 'PS-ORJ-PUPPY-001',

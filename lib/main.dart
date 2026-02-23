@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:petshop/controllers/auth_controller.dart';
+import 'package:petshop/controllers/category_controller.dart';
 import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/controllers/product_contoller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
@@ -22,6 +23,7 @@ void main() async {
   Get.put(AuthController());
   Get.put(ProductController());
   Get.put(NavigationController());
+  Get.put(CategoryController());
 
   //seed sample data to firestore for testing only
   await FirestoreDataSeeder.seedAllData();

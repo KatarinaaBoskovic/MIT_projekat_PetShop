@@ -38,33 +38,33 @@ class ProductController extends GetxController {
   }
 
   // Load all products from Firestore
- Future<void> loadProducts() async {
-  _isLoading.value = true;
-  _hasError.value = false;
-  _errorMessage.value = '';
-  update();
-
-  try {
-    final products = await ProductFirestoreService.getAllProducts();
-
-    _allProducts.value = products;
-    _filteredProducts.value = products;
-
-    await _loadFeaturedProducts();
-    await _loadSaleProducts();
-    await _loadCategories();
-  } catch (e) {
-    _hasError.value = true;
-    _errorMessage.value = 'Failed to load products. Please try again.';
-    print('Error loading products: $e');
-
-    _allProducts.value = [];
-    _filteredProducts.value = [];
-  } finally {
-    _isLoading.value = false;
+  Future<void> loadProducts() async {
+    _isLoading.value = true;
+    _hasError.value = false;
+    _errorMessage.value = '';
     update();
+
+    try {
+      final products = await ProductFirestoreService.getAllProducts();
+
+      _allProducts.value = products;
+      _filteredProducts.value = products;
+
+      await _loadFeaturedProducts();
+      await _loadSaleProducts();
+      await _loadCategories();
+    } catch (e) {
+      _hasError.value = true;
+      _errorMessage.value = 'Failed to load products. Please try again.';
+      print('Error loading products: $e');
+
+      _allProducts.value = [];
+      _filteredProducts.value = [];
+    } finally {
+      _isLoading.value = false;
+      update();
+    }
   }
-}
 
   // Load featured products
   Future<void> _loadFeaturedProducts() async {
@@ -136,12 +136,49 @@ class ProductController extends GetxController {
       filtered = filtered.where((product) {
         final productCat = product.category.toLowerCase();
 
-        // Handle special category mappings
-        if (selectedCat == 'home & living' || selectedCat == 'home') {
-          return productCat == 'home' || productCat == 'home & living';
+        // Handle petshop category mappings (synonyms)
+        if (selectedCat == 'food' || selectedCat == 'hrana') {
+          return productCat == 'food' ||
+              productCat == 'hrana' ||
+              productCat == 'treats';
         }
-        if (selectedCat == 'sports & fitness' || selectedCat == 'sports') {
-          return productCat == 'sports' || productCat == 'sports & fitness';
+
+        if (selectedCat == 'care' ||
+            selectedCat == 'nega' ||
+            selectedCat == 'grooming') {
+          return productCat == 'care' ||
+              productCat == 'nega' ||
+              productCat == 'grooming';
+        }
+
+        if (selectedCat == 'equipment' || selectedCat == 'oprema') {
+          return productCat == 'equipment' ||
+              productCat == 'oprema' ||
+              productCat == 'accessories';
+        }
+
+        if (selectedCat == 'clothes' ||
+            selectedCat == 'odeca' ||
+            selectedCat == 'clothing') {
+          return productCat == 'clothes' ||
+              productCat == 'odeca' ||
+              productCat == 'clothing';
+        }
+
+        if (selectedCat == 'toys' ||
+            selectedCat == 'igracke' ||
+            selectedCat == 'toys & games') {
+          return productCat == 'toys' ||
+              productCat == 'igracke' ||
+              productCat == 'toys & games';
+        }
+
+        if (selectedCat == 'health' ||
+            selectedCat == 'zdravlje' ||
+            selectedCat == 'vet') {
+          return productCat == 'health' ||
+              productCat == 'zdravlje' ||
+              productCat == 'vet';
         }
 
         //Match exact category name or display name

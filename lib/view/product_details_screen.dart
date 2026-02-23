@@ -5,10 +5,15 @@ import 'package:petshop/view/widgets/size_selector.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:petshop/utils/app_image.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
   final Product product;
   const ProductDetailsScreen({super.key, required this.product});
 
+  @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -35,8 +40,11 @@ class ProductDetailsScreen extends StatelessWidget {
         actions: [
           //share button
           IconButton(
-            onPressed: () =>
-                _shareProduct(context, product.name, product.description),
+            onPressed: () => _shareProduct(
+              context,
+              widget.product.name,
+              widget.product.description,
+            ),
             icon: Icon(
               Icons.share,
               color: isDark ? Colors.white : Colors.black,
@@ -54,7 +62,7 @@ class ProductDetailsScreen extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: AppImage(
-                    product.imageUrl, // ( getter vraća primaryImage)
+                    widget.product.imageUrl, // ( getter vraća primaryImage)
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -82,40 +90,136 @@ class ProductDetailsScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          product.name,
+                          widget.product.name,
                           style: AppTextStyle.withColor(
                             AppTextStyle.h2,
                             Theme.of(context).textTheme.headlineMedium!.color!,
                           ),
                         ),
                       ),
-                      Text(
-                        '\$${product.price.toStringAsFixed(2)}',
-                        style: AppTextStyle.withColor(
-                          AppTextStyle.h2,
-                          Theme.of(context).textTheme.headlineMedium!.color!,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            '\$${widget.product.price.toStringAsFixed(2)}',
+                            style: AppTextStyle.withColor(
+                              AppTextStyle.h2,
+                              Theme.of(
+                                context,
+                              ).textTheme.headlineMedium!.color!,
+                            ),
+                          ),
+                          if (widget.product.oldPrice != null &&
+                              widget.product.oldPrice! >
+                                  widget.product.price) ...[
+                            Text(
+                              '\$${widget.product.oldPrice!.toStringAsFixed(2)}',
+                              style:
+                                  AppTextStyle.withColor(
+                                    AppTextStyle.bodySmall,
+                                    isDark
+                                        ? Colors.grey[400]!
+                                        : Colors.grey[600]!,
+                                  ).copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${widget.product.discountPercentage}% OFF',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
-                  Text(
-                    product.category,
-                    style: AppTextStyle.withColor(
-                      AppTextStyle.bodyMedium,
-                      isDark ? Colors.grey[400]! : Colors.grey[600]!,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        widget.product.category,
+                        style: AppTextStyle.withColor(
+                          AppTextStyle.bodyMedium,
+                          isDark ? Colors.grey[400]! : Colors.grey[600]!,
+                        ),
+                      ),
+                      if (widget.product.brand != null) ...[
+                        Text(
+                          ' . ',
+                          style: AppTextStyle.withColor(
+                            AppTextStyle.bodyMedium,
+                            isDark ? Colors.grey[400]! : Colors.grey[600]!,
+                          ),
+                        ),
+                        Text(
+                          widget.product.brand!,
+                          style: AppTextStyle.withColor(
+                            AppTextStyle.bodyMedium,
+                            Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
+
+                  // Stock status
+                  if (widget.product.stock <= 5 && widget.product.stock > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Only ${widget.product.stock} left in stock!',
+                        style: AppTextStyle.withColor(
+                          AppTextStyle.bodySmall,
+                          Colors.orange,
+                        ),
+                      ),
+                    )
+                  else if (widget.product.stock == 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Out of stock',
+                        style: AppTextStyle.withColor(
+                          AppTextStyle.bodySmall,
+                          Colors.red,
+                        ),
+                      ),
+                    ),
+
                   SizedBox(height: screenHeight * 0.02),
-                  Text(
-                    'Select Size',
-                    style: AppTextStyle.withColor(
-                      AppTextStyle.labelMedium,
-                      Theme.of(context).textTheme.bodyLarge!.color!,
+                  //show size selector only if sizes are available
+                  if (_getAvailableSizes().isNotEmpty) ...[
+                    Text(
+                      'Select Size',
+                      style: AppTextStyle.withColor(
+                        AppTextStyle.labelMedium,
+                        Theme.of(context).textTheme.bodyLarge!.color!,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: screenHeight * 0.01),
-                  //size selector
-                  const SizeSelector(),
+                    SizedBox(height: screenHeight * 0.01),
+                    //size selector with product sizes
+                    SizeSelector(
+                      sizes: _getAvailableSizes(),
+                      onSizeSelected: (size){
+                        //handle size selection
+                        //add size selection logic here
+                      },
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                  ],
+
                   SizedBox(height: screenHeight * 0.02),
                   Text(
                     'Description',
@@ -126,7 +230,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: screenHeight * 0.01),
                   Text(
-                    product.description,
+                    widget.product.description,
                     style: AppTextStyle.withColor(
                       AppTextStyle.bodySmall,
                       isDark ? Colors.grey[400]! : Colors.grey[600]!,
@@ -190,6 +294,19 @@ class ProductDetailsScreen extends StatelessWidget {
     );
   }
 
+  // Get available sizes from product specifications
+  List<String> _getAvailableSizes() {
+    if (widget.product.specifications.containsKey('sizes')) {
+      final sizes = widget.product.specifications['sizes'];
+      if (sizes is List) {
+        return List<String>.from(sizes);
+      }
+    }
+
+    // Return empty list if no sizes specified (will hide size selector)
+    return [];
+  }
+
   //share product
   Future<void> _shareProduct(
     BuildContext context,
@@ -199,7 +316,7 @@ class ProductDetailsScreen extends StatelessWidget {
     //get the render box for share position origin
     final box = context.findRenderObject() as RenderBox?;
 
-    const String shopLink = 'https://petshop.com/product/cotton-tshirt';
+    String shopLink = 'https://petshop.com/product/${widget.product.id}';
     final String shareMessage = '$description\n\nShop now at $shopLink';
     try {
       final ShareResult result = await Share.share(

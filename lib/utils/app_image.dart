@@ -28,6 +28,10 @@ class AppImage extends StatelessWidget {
             width: width,
             height: height,
             fit: fit,
+            loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
             errorBuilder: (_, __, ___) => _placeholder(),
           )
         : Image.asset(
@@ -40,9 +44,9 @@ class AppImage extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        width: width,
-        height: height,
-        alignment: Alignment.center,
-        child: const Icon(Icons.image_not_supported_outlined),
-      );
+    width: width,
+    height: height,
+    alignment: Alignment.center,
+    child: const Icon(Icons.image_not_supported_outlined),
+  );
 }

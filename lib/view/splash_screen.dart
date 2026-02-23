@@ -6,7 +6,7 @@ import 'package:petshop/view/onboarding_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({super.key});
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

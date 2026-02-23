@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/state_manager.dart';
+import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/view/all_product_screen.dart';
 import 'package:petshop/view/cart_screen.dart';
@@ -22,38 +23,45 @@ class HomeScreen extends StatelessWidget {
           children: [
             //header section
             Padding(
-padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),              child: Row(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
+              child: Row(
                 children: [
                   CircleAvatar(
                     radius: 20,
                     backgroundImage: AssetImage('assets/images/avatar.jpg'),
                   ),
                   SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hello Kaca',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                  Expanded(
+                    flex: 2,
+                    child: GetX<AuthController>(
+                      builder: (authController) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hello ${authController.userName?.split(' ').first ?? 'User'}',
+                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                          ),
+                          const Text(
+                            'Good Morning',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Good Morning',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
+
                   Spacer(),
                   //notification icon
                   IconButton(
-                    onPressed: () => Get.to(()=> NotificationsScreen()),
+                    onPressed: () => Get.to(() => NotificationsScreen()),
                     icon: const Icon(Icons.notifications_outlined),
                   ),
                   //cart button
                   IconButton(
-                    onPressed: () =>Get.to(()=>const CartScreen()),
+                    onPressed: () => Get.to(() => const CartScreen()),
                     icon: const Icon(Icons.shopping_bag_outlined),
                   ),
                   //theme button
@@ -89,14 +97,12 @@ padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),              child: Row(
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
-                    onTap: ()=>Get.to(()=>const AllProductsScreen()),
+                    onTap: () => Get.to(() => const AllProductsScreen()),
                     child: Text(
                       'See All',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

@@ -49,6 +49,7 @@ class AccountScreen extends StatelessWidget {
 
   Widget _buildProfileSection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final AuthController authController=Get.find<AuthController>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -63,21 +64,25 @@ class AccountScreen extends StatelessWidget {
             backgroundImage: AssetImage('assets/images/avatar.jpg'),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Katarina Boskovic',
-            style: AppTextStyle.withColor(
-              AppTextStyle.h2,
-              Theme.of(context).textTheme.bodyLarge!.color!,
+          Obx(
+            () => Text(
+              authController.userName ?? "User",
+              style: AppTextStyle.withColor(
+                AppTextStyle.h2,
+                Theme.of(context).textTheme.bodyLarge!.color!,
+              ),
             ),
           ),
+
           const SizedBox(height: 4),
-          Text(
-            'katarinaboskovic65@gmail.com',
+          Obx(()=>  Text(
+            authController.userEmail ?? "",
             style: AppTextStyle.withColor(
               AppTextStyle.bodyMedium,
               isDark ? Colors.grey[400]! : Colors.grey[600]!,
             ),
-          ),
+          ),),
+         
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: () => Get.to(() => const EditProfileScreen()),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/checkout/screens/checkout_screen.dart';
+import 'package:petshop/utils/app_image.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -67,7 +68,7 @@ class CartScreen extends StatelessWidget {
             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(16),
             ),
-            child: Image.asset(
+            child: AppImage(
               product.imageUrl,
               width: 100,
               height: 100,
@@ -289,7 +290,7 @@ class CartScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Get.to(()=>const CheckoutScreen()),
+              onPressed: () => Get.to(() => const CheckoutScreen()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 16),

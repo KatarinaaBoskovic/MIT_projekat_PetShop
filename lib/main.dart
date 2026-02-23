@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/navigation_controller.dart';
+import 'package:petshop/controllers/product_contoller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/firebase_options.dart';
 import 'package:petshop/utils/app_themes.dart';
+import 'package:petshop/utils/firestore_data_seeder.dart';
 import 'package:petshop/view/splash_screen.dart';
 
 
@@ -18,7 +20,11 @@ void main() async {
   await GetStorage.init();
   Get.put(ThemeController());
   Get.put(AuthController());
+  Get.put(ProductController());
   Get.put(NavigationController());
+
+  //seed sample data to firestore for testing only
+  await FirestoreDataSeeder.seedAllData();
   runApp(const MyApp());
 }
 

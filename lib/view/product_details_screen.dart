@@ -3,6 +3,7 @@ import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/widgets/size_selector.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:petshop/utils/app_image.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final Product product;
@@ -52,8 +53,8 @@ class ProductDetailsScreen extends StatelessWidget {
                 //image
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: Image.asset(
-                    product.imageUrl,
+                  child: AppImage(
+                    product.imageUrl, // ( getter vraća primaryImage)
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -62,13 +63,9 @@ class ProductDetailsScreen extends StatelessWidget {
                 Positioned(
                   child: IconButton(
                     onPressed: () {},
-                    icon: Icon(
-                      product.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: product.isFavorite
-                          ? Theme.of(context).primaryColor
-                          : (isDark ? Colors.white : Colors.black),
+                    icon: const Icon(
+                      Icons.favorite_border,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -167,15 +164,15 @@ class ProductDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: screenWidth*0.04),
-               Expanded(
+              SizedBox(width: screenWidth * 0.04),
+              Expanded(
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       vertical: screenHeight * 0.02,
                     ),
-                   backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).primaryColor,
                   ),
                   child: Text(
                     'Buy Now',

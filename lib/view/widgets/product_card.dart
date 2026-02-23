@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/utils/app_image.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -39,8 +40,8 @@ class ProductCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
-                  child: Image.asset(
-                    product.imageUrl,
+                  child: AppImage(
+                    product.imageUrl, // može URL ili assets
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -51,18 +52,11 @@ class ProductCard extends StatelessWidget {
                 right: 8,
                 top: 8,
                 child: IconButton(
-                  icon: Icon(
-                    product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: product.isFavorite
-                        ? Theme.of(context).primaryColor
-                        : isDark
-                        ? Colors.grey[400]
-                        : Colors.grey,
-                  ),
+                  icon: const Icon(Icons.favorite_border, color: Colors.grey),
                   onPressed: () {},
                 ),
               ),
-              if (product.oldPrice != null)
+              if (product.oldPrice != null && product.oldPrice! > product.price)
                 Positioned(
                   left: 8,
                   top: 8,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/utils/app_image.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -34,18 +35,18 @@ class WishlistScreen extends StatelessWidget {
           //summary section
           SliverToBoxAdapter(child: _buildSummarySection(context)),
           //wishlist items
-          SliverPadding(
-            padding: const EdgeInsets.all(14),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildWishItem(
-                  context,
-                  products.where((p) => p.isFavorite).toList()[index],
-                ),
-                childCount: products.where((p) => p.isFavorite).length,
-              ),
-            ),
-          ),
+          //SliverPadding(
+          //  padding: const EdgeInsets.all(14),
+          // sliver: SliverList(
+          //   delegate: SliverChildBuilderDelegate(
+          //     (context, index) => _buildWishItem(
+          //      context,
+          //      products.where((p) => p.isFavorite).toList()[index],
+          //    ),
+          //   childCount: products.where((p) => p.isFavorite).length,
+          //  ),
+          //  ),
+          //  ),
         ],
       ),
     );
@@ -53,7 +54,7 @@ class WishlistScreen extends StatelessWidget {
 
   Widget _buildSummarySection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final favoriteProducts = products.where((p) => p.isFavorite).length;
+    final favoriteProducts = products.length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -89,7 +90,9 @@ class WishlistScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(
               'Add All to Cart',
@@ -128,7 +131,7 @@ class WishlistScreen extends StatelessWidget {
             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(12),
             ),
-            child: Image.asset(
+            child: AppImage(
               product.imageUrl,
               width: 120,
               height: 120,
@@ -142,7 +145,6 @@ class WishlistScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    
                     product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -166,7 +168,7 @@ class WishlistScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           '${product.price.toStringAsFixed(0)} RSD',
-                            maxLines: 1,
+                          maxLines: 1,
                           style: AppTextStyle.withColor(
                             AppTextStyle.h3,
                             Theme.of(context).primaryColor,
@@ -177,14 +179,18 @@ class WishlistScreen extends StatelessWidget {
                         children: [
                           IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.shopping_cart_outlined,
-                            color:Theme.of(context).primaryColor,
+                            icon: Icon(
+                              Icons.shopping_cart_outlined,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.delete_outline,
-                            color:isDark? Colors.grey[400]:Colors.grey[600],
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                           ),
                         ],

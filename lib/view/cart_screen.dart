@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petshop/models/product.dart';
+import 'package:petshop/controllers/cart_controller.dart';
+import 'package:petshop/models/cart_item.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/checkout/screens/checkout_screen.dart';
 import 'package:petshop/utils/app_image.dart';
@@ -28,24 +29,86 @@ class CartScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: products.length,
-              itemBuilder: (context, index) =>
-                  _buildCartItem(context, products[index]),
-            ),
-          ),
-          _buildCartSummary(context),
-        ],
+      body: GetBuilder<CartController>(
+        builder: (cartController) {
+          if (cartController.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (cartController.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    cartController.errorMessage,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => cartController.refreshCart(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (cartController.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Your cart is empty',
+                    style: AppTextStyle.withColor(
+                      AppTextStyle.h3,
+                      Colors.grey[600]!,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add some products to your cart',
+                    style: AppTextStyle.withColor(
+                      AppTextStyle.bodyMedium,
+                      Colors.grey[500]!,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: cartController.cartItems.length,
+                  itemBuilder: (context, index) =>
+                      _buildCartItem(context, cartController.cartItems[index]),
+                ),
+              ),
+              _buildCartSummary(context, cartController),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildCartItem(BuildContext context, Product product) {
+  Widget _buildCartItem(BuildContext context, CartItem cartItem) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final product = cartItem.product;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -96,7 +159,7 @@ class CartScreen extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () =>
-                            _showDeleteConformationDialog(context, product),
+                            _showDeleteConformationDialog(context, cartItem),
                         icon: Icon(
                           Icons.delete_outline,
                           color: Colors.red[400],
@@ -108,13 +171,42 @@ class CartScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${product.price.toStringAsFixed(0)} RSD',
-                        style: AppTextStyle.withColor(
-                          AppTextStyle.h3,
-                          Theme.of(context).primaryColor,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${product.price.toStringAsFixed(0)} RSD',
+                              style: AppTextStyle.withColor(
+                                AppTextStyle.h3,
+                                Theme.of(context).primaryColor,
+                              ),
+                            ),
+                        
+                            if (product.oldPrice != null &&
+                                product.oldPrice! > product.price) ...[
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${product.oldPrice!.toStringAsFixed(0)} RSD',
+                                    style:
+                                        AppTextStyle.withColor(
+                                          AppTextStyle.bodySmall,
+                                          Colors.grey[500]!,
+                                        ).copyWith(
+                                          decoration: TextDecoration.lineThrough,
+                                        ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  
+                                ],
+                              ),
+                            ],
+                          ],
                         ),
                       ),
+
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(
@@ -125,22 +217,34 @@ class CartScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: cartItem.quantity > 1
+                                  ? () => _updateQuantity(
+                                      cartItem,
+                                      cartItem.quantity - 1,
+                                    )
+                                  : null,
                               icon: Icon(
                                 Icons.remove,
                                 size: 20,
-                                color: Theme.of(context).primaryColor,
+                                color: cartItem.quantity > 1
+                                    ? Theme.of(context).primaryColor
+                                    : Colors.grey,
                               ),
                             ),
                             Text(
-                              '1',
+                              '${cartItem.quantity}',
                               style: AppTextStyle.withColor(
                                 AppTextStyle.bodyLarge,
                                 Theme.of(context).primaryColor,
                               ),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: cartItem.quantity < product.stock
+                                  ? () => _updateQuantity(
+                                      cartItem,
+                                      cartItem.quantity + 1,
+                                    )
+                                  : null,
                               icon: Icon(
                                 Icons.add,
                                 size: 20,
@@ -161,7 +265,7 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteConformationDialog(BuildContext context, Product product) {
+  void _showDeleteConformationDialog(BuildContext context, CartItem cartItem) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     Get.dialog(
       AlertDialog(
@@ -186,7 +290,7 @@ class CartScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
             Text(
-              'Are you sure you want to remove this item from your cart?',
+              'Are you sure you want to remove "${cartItem.product.name}" from your cart?',
               textAlign: TextAlign.center,
               style: AppTextStyle.withColor(
                 AppTextStyle.bodyMedium,
@@ -222,7 +326,8 @@ class CartScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      //add delete logic here
+                      final cartController = Get.find<CartController>();
+                      cartController.removeFromCart(cartItem.id);
                       Get.back();
                     },
                     style: ElevatedButton.styleFrom(
@@ -250,7 +355,16 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCartSummary(BuildContext context) {
+  // Update cart item quantity
+  Future<void> _updateQuantity(CartItem cartItem, int newQuantity) async {
+    final cartController = Get.find<CartController>();
+    await cartController.updateQuantity(cartItem.id, newQuantity);
+  }
+
+  Widget _buildCartSummary(
+    BuildContext context,
+    CartController cartController,
+  ) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -271,14 +385,14 @@ class CartScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total (${products.length} items)',
+                'Total (${cartController.itemCount} items)',
                 style: AppTextStyle.withColor(
                   AppTextStyle.bodyMedium,
                   Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
               Text(
-                '${products.fold<double>(0, (sum, p) => sum + p.price).toStringAsFixed(0)} RSD',
+                '${cartController.total.toStringAsFixed(0)} RSD',
                 style: AppTextStyle.withColor(
                   AppTextStyle.h2,
                   Theme.of(context).primaryColor,

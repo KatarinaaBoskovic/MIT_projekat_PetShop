@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
@@ -237,7 +238,7 @@ class WishlistScreen extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: Icon(Icons.shopping_cart_outlined),
-                            onPressed: () {},
+                            onPressed: () => _addToCartFromWishlist(product),
                             color: Theme.of(context).primaryColor,
                           ),
 
@@ -257,6 +258,102 @@ class WishlistScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // Add product to cart from wishlist
+  Future<void> _addToCartFromWishlist(Product product) async {
+    final cartController = Get.find<CartController>();
+
+    // Check if product has sizes and requires selection
+    if (product.specifications.containsKey('sizes')) {
+      final sizes = product.specifications['sizes'];
+      if (sizes is List && sizes.isNotEmpty) {
+        // show size selection dialog
+        _showSizeSelectionDialog(product, cartController);
+        return;
+      }
+    }
+
+    // Add to cart without size selection
+    await cartController.addToCart(product: product, quantity: 1);
+  }
+
+  // show size selection dialog for adding to cart
+  void _showSizeSelectionDialog(
+    Product product,
+    CartController cartController,
+  ) {
+    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
+    final sizes = List<String>.from(product.specifications['sizes'] ?? []);
+
+    showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Select Size',
+            style: AppTextStyle.withColor(
+              AppTextStyle.h3,
+              Theme.of(context).textTheme.headlineMedium!.color!,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Choose a size for "${product.name}"',
+                style: AppTextStyle.withColor(
+                  AppTextStyle.bodyMedium,
+                  Theme.of(context).textTheme.bodyMedium!.color!,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                children: sizes.map((size) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      Get.back();
+                      await cartController.addToCart(
+                        product: product,
+                        quantity: 1,
+                        selectedSize: size,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      size,
+                      style: AppTextStyle.withColor(
+                        AppTextStyle.buttonMedium,
+                        Colors.white,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: ()=>Get.back, child: Text(
+              'Cancle',
+              style: AppTextStyle.withColor(AppTextStyle.buttonMedium, 
+              isDark ? Colors.grey[400]! : Colors.grey[600]!,
+              ),
+
+            ))
+          ],
+        );
+      },
     );
   }
 

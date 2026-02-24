@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/widgets/size_selector.dart';
@@ -69,12 +71,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
                 //favorite button
                 Positioned(
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.white,
-                    ),
+                  child: GetBuilder<WishlistController>(
+                    id:'wishlist_${widget.product.id}',
+                    builder: (wishlistController) {
+                      final isInWishlist =wishlistController.isProductInWishlist(widget.product.id);
+                      return IconButton(
+                        icon:  Icon(
+                          isInWishlist ? Icons.favorite : Icons.favorite_border,
+                          color: isInWishlist ? Theme.of(context).primaryColor : (isDark ? Colors.white : Colors.black),
+                        ),
+                        onPressed: () {
+                          wishlistController.toggleWishlist(widget.product);
+                        },
+                      );
+                    }
                   ),
                 ),
               ],

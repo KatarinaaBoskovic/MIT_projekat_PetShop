@@ -7,6 +7,7 @@ import 'package:petshop/controllers/category_controller.dart';
 import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/controllers/product_contoller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
+import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/firebase_options.dart';
 import 'package:petshop/utils/app_themes.dart';
 import 'package:petshop/utils/firestore_data_seeder.dart';
@@ -24,6 +25,7 @@ void main() async {
   Get.put(ProductController());
   Get.put(NavigationController());
   Get.put(CategoryController());
+  Get.put(WishlistController());
 
   //seed sample data to firestore for testing only
   await FirestoreDataSeeder.seedAllData();

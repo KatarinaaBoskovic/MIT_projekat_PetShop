@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/utils/app_image.dart';
@@ -30,31 +32,87 @@ class WishlistScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          //summary section
-          SliverToBoxAdapter(child: _buildSummarySection(context)),
-          //wishlist items
-          //SliverPadding(
-          //  padding: const EdgeInsets.all(14),
-          // sliver: SliverList(
-          //   delegate: SliverChildBuilderDelegate(
-          //     (context, index) => _buildWishItem(
-          //      context,
-          //      products.where((p) => p.isFavorite).toList()[index],
-          //    ),
-          //   childCount: products.where((p) => p.isFavorite).length,
-          //  ),
-          //  ),
-          //  ),
-        ],
+      body: GetBuilder<WishlistController>(
+        builder: (wishlistController) {
+          if (wishlistController.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (wishlistController.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    wishlistController.errorMessage,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => wishlistController.refreshWishlist(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (wishlistController.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_border,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Your wishlist is empty',
+                    style: AppTextStyle.withColor(
+                      AppTextStyle.h3,
+                      Colors.grey[500]!,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return CustomScrollView(
+            slivers: [
+              //summary section
+              SliverToBoxAdapter(
+                child: _buildSummarySection(
+                  context,
+                  wishlistController.itemCount,
+                ),
+              ),
+              //wishlist items
+              SliverPadding(
+                padding: const EdgeInsets.all(14),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => _buildWishItem(
+                      context,
+                      wishlistController.wishlistProducts[index],
+                    ),
+                    childCount: wishlistController.wishlistProducts.length,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSummarySection(BuildContext context) {
+  Widget _buildSummarySection(BuildContext context, int itemCount) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final favoriteProducts = products.length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -69,7 +127,7 @@ class WishlistScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$favoriteProducts Items',
+                '$itemCount Items',
                 style: AppTextStyle.withColor(
                   AppTextStyle.h2,
                   Theme.of(context).textTheme.bodyLarge!.color!,
@@ -178,20 +236,16 @@ class WishlistScreen extends StatelessWidget {
                       Row(
                         children: [
                           IconButton(
+                            icon: Icon(Icons.shopping_cart_outlined),
                             onPressed: () {},
-                            icon: Icon(
-                              Icons.shopping_cart_outlined,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                            color: Theme.of(context).primaryColor,
                           ),
+
                           IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: isDark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
-                            ),
+                            icon: Icon(Icons.delete_outline),
+                            onPressed: () =>
+                                _showDeleteConfirmationDialog(context, product),
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
                           ),
                         ],
                       ),
@@ -203,6 +257,69 @@ class WishlistScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // show delete confirmation dialog
+  void _showDeleteConfirmationDialog(BuildContext context, Product product) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Remove from wishlist',
+            style: AppTextStyle.withColor(
+              AppTextStyle.h3,
+              Theme.of(context).textTheme.headlineMedium!.color!,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to remove "${product.name}" from your wishlist?',
+            style: AppTextStyle.withColor(
+              AppTextStyle.bodyMedium,
+              Theme.of(context).textTheme.bodyMedium!.color!,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(
+                'Cancel',
+                style: AppTextStyle.withColor(
+                  AppTextStyle.buttonMedium,
+                  isDark ? Colors.grey[400]! : Colors.grey[600]!,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final wishlistController = Get.find<WishlistController>();
+                wishlistController.removeFromWishlist(product.id);
+                Get.back();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Remove',
+                style: AppTextStyle.withColor(
+                  AppTextStyle.buttonMedium,
+                  Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,4 +1,8 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/utils/app_image.dart';
@@ -51,9 +55,20 @@ class ProductCard extends StatelessWidget {
               Positioned(
                 right: 8,
                 top: 8,
-                child: IconButton(
-                  icon: const Icon(Icons.favorite_border, color: Colors.grey),
-                  onPressed: () {},
+                child: GetBuilder<WishlistController>(
+                  id: 'wishlist_${product.id}',
+                  builder: (wishlistController) {
+                    final isInWishlist=wishlistController.isProductInWishlist(product.id);
+                    return IconButton(
+                      icon: Icon(
+                        isInWishlist ? Icons.favorite: Icons.favorite_border, 
+                        color:isInWishlist ? Theme.of(context).primaryColor : isDark ? Colors.grey[400]:Colors.grey,
+                        ),
+                      onPressed: () {
+                        wishlistController.toggleWishlist(product);
+                      },
+                    );
+                  }
                 ),
               ),
               if (product.oldPrice != null && product.oldPrice! > product.price)

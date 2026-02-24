@@ -16,6 +16,9 @@ class ProductController extends GetxController {
   final RxString _selectedCategory = 'All'.obs;
   final RxString _searchQuery = ''.obs;
 
+  final RxDouble _minPrice = 0.0.obs;
+  final RxDouble _maxPrice = double.infinity.obs;
+
   // Getters
   List<Product> get allProducts => _allProducts;
   List<Product> get filteredProducts => _filteredProducts;
@@ -29,6 +32,9 @@ class ProductController extends GetxController {
 
   String get selectedCategory => _selectedCategory.value;
   String get searchQuery => _searchQuery.value;
+
+  double get minPrice => _minPrice.value;
+  double get maxPrice => _maxPrice.value;
 
   @override
   void onInit() {
@@ -114,6 +120,8 @@ class ProductController extends GetxController {
   void resetFilters() {
     _selectedCategory.value = 'All';
     _searchQuery.value = '';
+    _minPrice.value=0.0;
+    _maxPrice.value=double.infinity;
     _filteredProducts.value = _allProducts;
     update(); // Notify GetBuilder widgets
   }
@@ -196,6 +204,18 @@ class ProductController extends GetxController {
       // "All" selected — show all products
       print('Showing all products: ${_allProducts.length}');
     }
+
+// Apply price range filter
+if (_minPrice.value > 0 || _maxPrice.value < double.infinity) {
+  filtered = filtered.where((product) {
+    final price = product.price;
+    return price >= _minPrice.value && price <= _maxPrice.value;
+  }).toList();
+
+  print('Filtering by price range: $_minPrice - $_maxPrice');
+  print('Found ${filtered.length} products in price range');
+}
+
     // Apply search filter
     if (_searchQuery.value.isNotEmpty) {
       final query = _searchQuery.value.toLowerCase();
@@ -233,6 +253,14 @@ class ProductController extends GetxController {
     }
   }
 
+  // Set price range filter
+void setPriceRange(double min, double max) {
+  _minPrice.value = min;
+  _maxPrice.value = max;
+  _applyFilters();
+  update(); // Notify GetBuilder widgets
+}
+
   // Get product by ID
   Future<Product?> getProductById(String productId) async {
     try {
@@ -257,9 +285,8 @@ class ProductController extends GetxController {
 
   // Get products for display
   List<Product> getDisplayProducts() {
-
-    //if there is an active search query, always show filtered results
-    if(_searchQuery.value.isNotEmpty){
+    //if there is an active search query or price filter, always show filtered results
+    if (_searchQuery.value.isNotEmpty || _minPrice.value>0||_maxPrice.value<double.infinity) {
       return _filteredProducts;
     }
 

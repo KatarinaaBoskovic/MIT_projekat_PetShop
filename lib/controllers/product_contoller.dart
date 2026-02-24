@@ -257,6 +257,12 @@ class ProductController extends GetxController {
 
   // Get products for display
   List<Product> getDisplayProducts() {
+
+    //if there is an active search query, always show filtered results
+    if(_searchQuery.value.isNotEmpty){
+      return _filteredProducts;
+    }
+
     // if 'All' is selected, show all products
     if (_selectedCategory.value == 'All') {
       return _allProducts;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/search_results_screen.dart';
 import 'package:petshop/view/widgets/filter_bottom_sheet.dart';
 import 'package:petshop/view/widgets/product_grid.dart';
 
@@ -31,7 +32,9 @@ class AllProductsScreen extends StatelessWidget {
         actions: [
           //search icon
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(()=> const SearchResultsScreen(searchQuery: ''));
+            },
             icon: Icon(
               Icons.search,
               color: isDark ? Colors.white : Colors.black,

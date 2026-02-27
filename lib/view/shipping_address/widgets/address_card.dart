@@ -6,10 +6,14 @@ class AddressCard extends StatelessWidget {
   final Address address;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onSetDefault;
 
-  const AddressCard({super.key, required this.address,
-  required this.onDelete,
-  required this.onEdit,
+  const AddressCard({
+    super.key,
+    required this.address,
+    required this.onDelete,
+    required this.onEdit,
+    this.onSetDefault,
   });
 
   @override
@@ -102,9 +106,10 @@ class AddressCard extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1, color: isDark
-      ? Colors.grey.shade700
-      : Colors.grey.shade200,),
+          Divider(
+            height: 1,
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+          ),
           Row(
             children: [
               Expanded(
@@ -119,24 +124,24 @@ class AddressCard extends StatelessWidget {
                           Icons.edit_outlined,
                           color: Theme.of(context).primaryColor,
                           size: 20,
-                        ), 
-                        const SizedBox(width: 8),
-                        Text('Edit',
-                        style: AppTextStyle.withColor(
-                          AppTextStyle.buttonMedium,
-                          Theme.of(context).primaryColor,
                         ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Edit',
+                          style: AppTextStyle.withColor(
+                            AppTextStyle.buttonMedium,
+                            Theme.of(context).primaryColor,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              Container(width: 1,
-              height: 24,
-              color: isDark
-      ? Colors.grey.shade700
-      : Colors.grey.shade200,
+              Container(
+                width: 1,
+                height: 24,
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
               ),
               Expanded(
                 child: InkWell(
@@ -150,19 +155,39 @@ class AddressCard extends StatelessWidget {
                           Icons.delete_outline,
                           color: Colors.red,
                           size: 20,
-                        ), 
-                        const SizedBox(width: 8),
-                        Text('Delete',
-                        style: AppTextStyle.withColor(
-                          AppTextStyle.buttonMedium,
-                          Colors.red,
                         ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Delete',
+                          style: AppTextStyle.withColor(
+                            AppTextStyle.buttonMedium,
+                            Colors.red,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+
+              if (!address.isDefault) ...[
+                Container(
+                  width: 1,
+                  height: 24,
+                  color: isDark ? Colors.grey[800] : Colors.grey[200],
+                ), 
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: onSetDefault,
+                    icon: const Icon(Icons.check_circle_outline, size: 18),
+                    label: const Text('Set Default'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      foregroundColor: Theme.of(context).primaryColor,
+                    ),
+                  ), 
+                ), 
+              ],
             ],
           ),
         ],

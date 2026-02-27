@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:petshop/controllers/address_controller.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/controllers/category_controller.dart';
@@ -14,12 +15,9 @@ import 'package:petshop/utils/app_themes.dart';
 import 'package:petshop/utils/firestore_data_seeder.dart';
 import 'package:petshop/view/splash_screen.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GetStorage.init();
   Get.put(ThemeController());
   Get.put(AuthController());
@@ -28,7 +26,7 @@ void main() async {
   Get.put(CategoryController());
   Get.put(WishlistController());
   Get.put(CartController());
-
+  Get.put(AddressController());
 
   //seed sample data to firestore for testing only
   await FirestoreDataSeeder.seedAllData();

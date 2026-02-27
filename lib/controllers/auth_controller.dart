@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:petshop/controllers/address_controller.dart';
 import 'package:petshop/services/firebase_auth_service.dart';
 import 'package:petshop/services/firestore_service.dart';
 
@@ -68,9 +70,17 @@ class AuthController extends GetxController {
       if (user != null) {
         // Load user document from Firestore
         _loadUserDocument(user.uid);
+        // Reset address controller to load addresses for the new user
+        if (Get.isRegistered<AddressController>()) {
+          Get.find<AddressController>().loadAddresses();
+        }
       } else {
         // Clear user document when signed out
         _userDocument.value = null;
+        // Reset address controller when user logs out
+        if (Get.isRegistered<AddressController>()) {
+          Get.find<AddressController>().loadAddresses();
+        }
       }
     });
   }

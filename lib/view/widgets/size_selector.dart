@@ -42,7 +42,7 @@ class _SizeSelectorState extends State<SizeSelector> {
           final isSelected = _selectedIndex == index;
           return GestureDetector(
             onTap: () {
-              setState(() =>_selectedIndex==index);
+              setState(() =>_selectedIndex=index);
               if(widget.onSizeSelected!=null){
                 widget.onSizeSelected!(widget.sizes[index]);
               }

@@ -61,18 +61,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           ),
         ),
 
-        actions: [
-          IconButton(
-            onPressed: () {
-              _searchController.clear();
-              _performSearch('');
-            },
-            icon: Icon(
-              Icons.clear,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-        ],
+       
       ),
       body: Column(
         children: [
@@ -108,10 +97,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           color: isDark ? Colors.grey[400] : Colors.grey[600],
                         ),
                       )
-                    : Icon(
-                        Icons.tune,
-                        color: isDark ? Colors.grey[400] : Colors.grey[600],
-                      ),
+                    : null,
                 filled: true,
                 fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
                 border: OutlineInputBorder(

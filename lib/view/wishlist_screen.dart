@@ -5,6 +5,7 @@ import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/utils/app_image.dart';
+import 'package:petshop/view/cart_screen.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -23,15 +24,7 @@ class WishlistScreen extends StatelessWidget {
             isDark ? Colors.white : Colors.black,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.search,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-        ],
+       
       ),
       body: GetBuilder<WishlistController>(
         builder: (wishlistController) {
@@ -167,49 +160,48 @@ class WishlistScreen extends StatelessWidget {
   }
 
   // Add all wishlist items to cart
-  Future<void> _addAllToCart() async {
-    final wishlistController = Get.find<WishlistController>();
-    final cartController = Get.find<CartController>();
+ Future<void> _addAllToCart() async {
+  final wishlistController = Get.find<WishlistController>();
+  final cartController = Get.find<CartController>();
 
-    if (wishlistController.isEmpty) {
-      Get.snackbar(
-        'Empty Wishlist',
-        'Your wishlist is empty',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    // show confirmation dialog
-    final confirmed = await _showAddAllConfirmationDialog();
-    if (!confirmed) return;
-
-    // show loading dialog
-    Get.dialog(
-      const PopScope(
-        canPop: false,
-        child: Center(child: CircularProgressIndicator()),
-      ), // PopScope
-      barrierDismissible: false,
+  if (wishlistController.isEmpty) {
+    Get.snackbar(
+      'Empty Wishlist',
+      'Your wishlist is empty',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
     );
+    return;
+  }
 
-    int successCount = 0;
-    int failureCount = 0;
-    List<String> failedProducts = [];
+  final confirmed = await _showAddAllConfirmationDialog();
+  if (!confirmed) return;
 
-    // Add each wishlist item to cart
-    for (var wishlistItem in wishlistController.wishlistItems) {
+  Get.dialog(
+    const PopScope(
+      canPop: false,
+      child: Center(child: CircularProgressIndicator()),
+    ),
+    barrierDismissible: false,
+  );
+
+  int successCount = 0;
+  int failureCount = 0;
+  final failedProducts = <String>[];
+
+  //KOPIJA liste (da ne puca iteracija)
+  final items = List.of(wishlistController.wishlistItems);
+
+  //  skuplja šta treba obrisati, a briše tek na kraju
+  final idsToRemove = <String>[];
+
+  try {
+    for (final wishlistItem in items) {
       final product = wishlistItem.product;
 
-      // check if product has sizes
       final availableSizes = _getProductSizes(product);
-      String? selectedSize;
-
-      if (availableSizes.isNotEmpty) {
-        // for products with sizes, use the first available size
-        selectedSize = availableSizes.first;
-      }
+      final String? selectedSize =
+          availableSizes.isNotEmpty ? availableSizes.first : null;
 
       try {
         final success = await cartController.addToCart(
@@ -219,8 +211,9 @@ class WishlistScreen extends StatelessWidget {
           showNotification: false,
         );
 
-        if (success) {
+        if (success == true) {
           successCount++;
+          idsToRemove.add(product.id); 
         } else {
           failureCount++;
           failedProducts.add(product.name);
@@ -228,55 +221,58 @@ class WishlistScreen extends StatelessWidget {
       } catch (e) {
         failureCount++;
         failedProducts.add(product.name);
-        print('Error adding ${product.name} to cart: $e');
+        debugPrint('Error adding ${product.name} to cart: $e');
       }
     }
-    // close loading dialog — ensure it's closed
-    try {
-      if (Get.isDialogOpen ?? false) {
-        Get.back();
-      }
-    } catch (e) {
-      // Force close any open dialogs
-      while (Get.isDialogOpen ?? false) {
-        Get.back();
-      }
-    }
-
-    // Small delay to ensure dialog is closed before showing snackbar
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    // show result notification
-    if (successCount > 0 && failureCount == 0) {
-      Get.snackbar(
-        'Success!',
-        '$successCount items added to cart',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-    } else if (successCount > 0 && failureCount > 0) {
-      Get.snackbar(
-        'Partially Added',
-        '$successCount items added, $failureCount failed',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
-    } else {
-      Get.snackbar(
-        'Failed',
-        'Failed to add items to cart. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+  } finally {
+    
+    if (Get.isDialogOpen ?? false) {
+      Get.back();
     }
   }
 
+
+  for (final id in idsToRemove) {
+    wishlistController.removeFromWishlist(id);
+  }
+
+  await Future.delayed(const Duration(milliseconds: 150));
+
+  if (successCount > 0 && failureCount == 0) {
+    Get.snackbar(
+      'Success!',
+      '$successCount items added to cart',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+
+   Get.to(() => const CartScreen());
+
+  } else if (successCount > 0 && failureCount > 0) {
+    Get.snackbar(
+      'Partially Added',
+      '$successCount items added, $failureCount failed',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
+    );
+
+   
+
+  } else {
+    Get.snackbar(
+      'Failed',
+      'Failed to add items to cart. Please try again.',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  }
+}
   // show confirmation dialog for adding all items to cart
   Future<bool> _showAddAllConfirmationDialog() async {
     final wishlistController = Get.find<WishlistController>();
@@ -440,21 +436,25 @@ class WishlistScreen extends StatelessWidget {
 
   // Add product to cart from wishlist
   Future<void> _addToCartFromWishlist(Product product) async {
-    final cartController = Get.find<CartController>();
+  final cartController = Get.find<CartController>();
+  final wishlistController = Get.find<WishlistController>();
 
-    // Check if product has sizes and requires selection
-    if (product.specifications.containsKey('sizes')) {
-      final sizes = product.specifications['sizes'];
-      if (sizes is List && sizes.isNotEmpty) {
-        // show size selection dialog
-        _showSizeSelectionDialog(product, cartController);
-        return;
-      }
+  // Check if product has sizes and requires selection
+  if (product.specifications.containsKey('sizes')) {
+    final sizes = product.specifications['sizes'];
+    if (sizes is List && sizes.isNotEmpty) {
+      _showSizeSelectionDialog(product, cartController); // dialog će obrisati posle add
+      return;
     }
-
-    // Add to cart without size selection
-    await cartController.addToCart(product: product, quantity: 1);
   }
+
+  final success = await cartController.addToCart(product: product, quantity: 1);
+
+  // ✅ ako je dodat u cart, skloni iz wishlist-e
+  if (success == true) {
+    wishlistController.removeFromWishlist(product.id);
+  }
+}
 
   // show size selection dialog for adding to cart
   void _showSizeSelectionDialog(
@@ -496,11 +496,14 @@ class WishlistScreen extends StatelessWidget {
                   return ElevatedButton(
                     onPressed: () async {
                       Get.back();
-                      await cartController.addToCart(
-                        product: product,
-                        quantity: 1,
-                        selectedSize: size,
-                      );
+                       final success = await cartController.addToCart(
+    product: product,
+    quantity: 1,
+    selectedSize: size,
+  );
+  if (success == true) {
+    Get.find<WishlistController>().removeFromWishlist(product.id);
+  }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
@@ -522,9 +525,9 @@ class WishlistScreen extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.back,
+              onPressed: () => Get.back(),
               child: Text(
-                'Cancle',
+                'Cancel',
                 style: AppTextStyle.withColor(
                   AppTextStyle.buttonMedium,
                   isDark ? Colors.grey[400]! : Colors.grey[600]!,

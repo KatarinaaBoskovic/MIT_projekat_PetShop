@@ -148,7 +148,10 @@ class CartScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          product.name,
+                          cartItem.selectedSize != null &&
+                                  cartItem.selectedSize!.isNotEmpty
+                              ? '${product.name} (${cartItem.selectedSize})'
+                              : product.name,
                           style: AppTextStyle.withColor(
                             AppTextStyle.bodyLarge,
                             Theme.of(context).textTheme.bodyLarge!.color!,
@@ -182,7 +185,7 @@ class CartScreen extends StatelessWidget {
                                 Theme.of(context).primaryColor,
                               ),
                             ),
-                        
+
                             if (product.oldPrice != null &&
                                 product.oldPrice! > product.price) ...[
                               const SizedBox(height: 2),
@@ -195,11 +198,11 @@ class CartScreen extends StatelessWidget {
                                           AppTextStyle.bodySmall,
                                           Colors.grey[500]!,
                                         ).copyWith(
-                                          decoration: TextDecoration.lineThrough,
+                                          decoration:
+                                              TextDecoration.lineThrough,
                                         ),
                                   ),
                                   const SizedBox(width: 8),
-                                  
                                 ],
                               ),
                             ],

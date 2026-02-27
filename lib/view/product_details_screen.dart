@@ -4,6 +4,7 @@ import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/cart_screen.dart';
 import 'package:petshop/view/widgets/size_selector.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:petshop/utils/app_image.dart';
@@ -127,7 +128,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       Column(
                         children: [
                           Text(
-                            '\$${widget.product.price.toStringAsFixed(2)}',
+                            '${widget.product.price.toStringAsFixed(0)} RSD',
                             style: AppTextStyle.withColor(
                               AppTextStyle.h2,
                               Theme.of(
@@ -139,7 +140,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               widget.product.oldPrice! >
                                   widget.product.price) ...[
                             Text(
-                              '\$${widget.product.oldPrice!.toStringAsFixed(2)}',
+                              '${widget.product.oldPrice!.toStringAsFixed(0)} RSD',
                               style:
                                   AppTextStyle.withColor(
                                     AppTextStyle.bodySmall,
@@ -241,7 +242,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       sizes: _getAvailableSizes(),
                       onSizeSelected: (size) {
                         setState(() {
-                          selectedSize=size;
+                          selectedSize = size;
                         });
                       },
                     ),
@@ -279,12 +280,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Expanded(
                 child: GetBuilder<CartController>(
                   builder: (cartController) {
-                    final isInCart=cartController.isProductInCart(
+                    final isInCart = cartController.isProductInCart(
                       widget.product.id,
-                      selectedSize:selectedSize,
-                );
+                      selectedSize: selectedSize,
+                    );
                     return OutlinedButton(
-                      onPressed: widget.product.stock>0? ()=>_addToCart(cartController): null,
+                      onPressed: widget.product.stock > 0
+                          ? () => _addToCart(cartController)
+                          : null,
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
                           vertical: screenHeight * 0.02,
@@ -294,20 +297,51 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                       ),
                       child: Text(
-                        widget.product.stock>0?(isInCart?'Update Cart':'Add To Cart'):'Out of Stock',
+                        widget.product.stock > 0
+                            ? (isInCart ? 'Update Cart' : 'Add To Cart')
+                            : 'Out of Stock',
                         style: AppTextStyle.withColor(
                           AppTextStyle.buttonMedium,
                           Theme.of(context).textTheme.bodyLarge!.color!,
                         ),
                       ),
                     );
-                  }
+                  },
                 ),
               ),
               SizedBox(width: screenWidth * 0.04),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: widget.product.stock > 0
+                      ? () async {
+                          final cartController = Get.find<CartController>();
+
+                          // proveri size ako postoji
+                          final availableSizes = _getAvailableSizes();
+                          if (availableSizes.isNotEmpty &&
+                              selectedSize == null) {
+                            Get.snackbar(
+                              'Size Required',
+                              'Please select a size before buying',
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: Colors.orange,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          // dodaj u cart
+                          await cartController.addToCart(
+                            product: widget.product,
+                            quantity: 1,
+                            selectedSize: selectedSize,
+                          );
+
+                          // idi na cart screen
+                          Get.to(() => const CartScreen());
+                        }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       vertical: screenHeight * 0.02,
@@ -331,28 +365,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   // Add product to cart
-Future<void> _addToCart(CartController cartController) async {
-  // Check if size selection is required
-  final availableSizes = _getAvailableSizes();
-  if (availableSizes.isNotEmpty && selectedSize == null) {
-    Get.snackbar(
-      'Size Required',
-      'Please select a size before adding to cart',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-      backgroundColor: Colors.orange,
-      colorText: Colors.white,
-    );
-    return;
-  }
+  Future<void> _addToCart(CartController cartController) async {
+    // Check if size selection is required
+    final availableSizes = _getAvailableSizes();
+    if (availableSizes.isNotEmpty && selectedSize == null) {
+      Get.snackbar(
+        'Size Required',
+        'Please select a size before adding to cart',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
-  // add to cart with selected options
-  await cartController.addToCart(
-    product: widget.product,
-    quantity: 1,
-    selectedSize: selectedSize,
-  );
-}
+    // add to cart with selected options
+    await cartController.addToCart(
+      product: widget.product,
+      quantity: 1,
+      selectedSize: selectedSize,
+    );
+  }
 
   // Get available sizes from product specifications
   List<String> _getAvailableSizes() {

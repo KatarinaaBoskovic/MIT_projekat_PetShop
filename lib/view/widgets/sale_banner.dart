@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 
 class SaleBanner extends StatelessWidget {
@@ -7,8 +9,8 @@ class SaleBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-    margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),      
-    padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(12),
@@ -24,7 +26,7 @@ class SaleBanner extends StatelessWidget {
                   'Get Your',
                   style: AppTextStyle.withColor(AppTextStyle.h4, Colors.white),
                 ),
-                
+
                 Text(
                   'Special Sale',
                   style: AppTextStyle.withColor(
@@ -40,23 +42,17 @@ class SaleBanner extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-                  onPressed: () {
-
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                       
-                      ),  
-                  ),
-                  child: Text(
-                    'Shop Now',
-                    style: AppTextStyle.buttonMedium,      
-                  ),
-                ),
+            onPressed: () {
+              final nav = Get.find<NavigationController>();
+  nav.changeIndex(1); // prebaci na Shopping tab
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
+            child: Text('Shop Now', style: AppTextStyle.buttonMedium),
+          ),
         ],
       ),
     );

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/models/product.dart';
@@ -101,12 +103,7 @@ class WishlistController extends GetxController {
       if (success) {
         await loadWishlistItems(); // Refresh wishlist
         update();
-        Get.snackbar(
-          'Added to Wishlist',
-          '${product.name} added to your wishlist',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
+        
       } else {
         Get.snackbar(
           'Error',
@@ -151,12 +148,7 @@ class WishlistController extends GetxController {
       if (success) {
         await loadWishlistItems(); // Refresh wishlist
         update();
-        Get.snackbar(
-          'Removed from Wishlist',
-          'Item removed from your wishlist',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
+        
       }
       return success;
     } catch (e) {

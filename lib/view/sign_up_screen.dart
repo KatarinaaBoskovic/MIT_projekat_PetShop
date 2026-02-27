@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
+import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/main_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
@@ -254,14 +255,9 @@ void _handleSignUp() async {
 Get.back();
 
       if (result.success) {
-        Get.snackbar(
-          'Success',
-          result.message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
+        
+         final nav = Get.find<NavigationController>();
+  nav.currentIndex.value = 0;
         Get.offAll(() => const MainScreen());
       } else {
         Get.snackbar(

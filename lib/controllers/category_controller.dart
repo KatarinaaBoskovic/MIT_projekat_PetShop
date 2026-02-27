@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:petshop/models/category.dart';
 import 'package:petshop/services/category_firestore_service.dart';

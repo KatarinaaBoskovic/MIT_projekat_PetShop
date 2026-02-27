@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:petshop/controllers/product_contoller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/search_results_screen.dart';

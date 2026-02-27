@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
+import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/view/all_product_screen.dart';
 import 'package:petshop/view/cart_screen.dart';
@@ -26,9 +26,26 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage('assets/images/avatar.jpg'),
+                  GestureDetector(
+                    onTap: () {
+                      final nav = Get.find<NavigationController>();
+                      nav.currentIndex.value = 3; 
+                    },
+                    child: GetX<AuthController>(
+                      builder: (authController) {
+                        final id = authController.avatarId;
+
+                        return CircleAvatar(
+                          radius: 20,
+                          backgroundImage: (id >= 1 && id <= 6)
+                              ? AssetImage('assets/avatars/a$id.jpg')
+                              : null,
+                          child: (id >= 1 && id <= 6)
+                              ? null
+                              : const Icon(Icons.person, size: 20),
+                        );
+                      },
+                    ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
@@ -39,7 +56,10 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Hello ${authController.userName?.split(' ').first ?? 'User'}',
-                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
                           ),
                           const Text(
                             'Good Morning',

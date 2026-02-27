@@ -6,7 +6,7 @@ import 'package:petshop/view/shipping_address/models/address.dart';
 import 'package:petshop/view/shipping_address/widgets/address_card.dart';
 
 class ShippingAddressScreen extends StatefulWidget {
-  ShippingAddressScreen({super.key});
+  const ShippingAddressScreen({super.key});
 
   @override
   State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
@@ -123,7 +123,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
     final zipCodeController = TextEditingController();
 
     // Address type selection
-    final _selectedType = AddressType.home.obs;
+    final selectedType = AddressType.home.obs;
 
     // Set as default checkbox
     final isDefault = (_controller.addresses.isEmpty).obs;
@@ -196,24 +196,24 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                         context,
                         'Home',
                         AddressType.home,
-                        _selectedType.value,
-                        () => _selectedType.value = AddressType.home,
+                        selectedType.value,
+                        () => selectedType.value = AddressType.home,
                       ),
                       const SizedBox(width: 8),
                       _buildAddressTypeChip(
                         context,
                         'Office',
                         AddressType.office,
-                        _selectedType.value,
-                        () => _selectedType.value = AddressType.office,
+                        selectedType.value,
+                        () => selectedType.value = AddressType.office,
                       ),
                       const SizedBox(width: 8),
                       _buildAddressTypeChip(
                         context,
                         'Other',
                         AddressType.other,
-                        _selectedType.value,
-                        () => _selectedType.value = AddressType.other,
+                        selectedType.value,
+                        () => selectedType.value = AddressType.other,
                       ),
                     ],
                   ),
@@ -309,7 +309,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                           state: stateController.text,
                           zipCode: zipCodeController.text,
                           isDefault: isDefault.value,
-                          type: _selectedType.value,
+                          type: selectedType.value,
                         );
 
                         isLoading.value = true;

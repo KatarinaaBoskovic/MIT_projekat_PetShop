@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/models/cart_item.dart';
@@ -241,12 +243,7 @@ class CartController extends GetxController {
       if (success) {
         await loadCartItems();
         update();
-        Get.snackbar(
-          'Removed from Cart',
-          'Item removed from your cart',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
+        
       }
 
       return success;

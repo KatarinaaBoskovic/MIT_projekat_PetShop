@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:petshop/controllers/address_controller.dart';
 import 'package:petshop/services/firebase_auth_service.dart';
@@ -16,6 +17,7 @@ class AuthController extends GetxController {
   final Rx<Map<String, dynamic>?> _userDocument = Rx<Map<String, dynamic>?>(
     null,
   );
+  final RxBool avatarChanged = false.obs;
 
   bool get isFirstTime => _isFirstTime.value;
   bool get isLoggedIn => _isLoggedIn.value;
@@ -30,6 +32,8 @@ class AuthController extends GetxController {
   List<dynamic>? get userAddresses => _userDocument.value?['addresses'];
   Map<String, dynamic>? get userPreferences =>
       _userDocument.value?['preferences'];
+  int get avatarId => (_userDocument.value?['avatarId'] as int?) ?? 0;
+  
 
   @override
   void onInit() {
@@ -249,4 +253,24 @@ class AuthController extends GetxController {
       _isLoading.value = false;
     }
   }
+  Future<bool> setAvatarId(int id) async {
+  if (_user.value == null) return false;
+
+  _isLoading.value = true;
+  try {
+    final success = await FirestoreService.updateUserProfile(
+      uid: _user.value!.uid,
+      avatarId: id,
+    );
+
+    if (success) {
+      avatarChanged.value = true;
+      await _loadUserDocument(_user.value!.uid);
+    }
+
+    return success;
+  } finally {
+    _isLoading.value = false;
+  }
+}
 }

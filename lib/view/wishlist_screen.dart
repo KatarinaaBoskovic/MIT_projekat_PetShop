@@ -450,7 +450,7 @@ class WishlistScreen extends StatelessWidget {
 
   final success = await cartController.addToCart(product: product, quantity: 1);
 
-  // ✅ ako je dodat u cart, skloni iz wishlist-e
+  //  ako je dodat u cart, skloni iz wishlist-e
   if (success == true) {
     wishlistController.removeFromWishlist(product.id);
   }

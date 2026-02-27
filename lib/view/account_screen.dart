@@ -49,7 +49,7 @@ class AccountScreen extends StatelessWidget {
 
   Widget _buildProfileSection(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final AuthController authController=Get.find<AuthController>();
+    final AuthController authController = Get.find<AuthController>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -59,10 +59,19 @@ class AccountScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/images/avatar.jpg'),
-          ),
+          Obx(() {
+            final id = authController.avatarId;
+
+            return CircleAvatar(
+              radius: 50,
+              backgroundImage: (id >= 1 && id <= 6)
+                  ? AssetImage('assets/avatars/a$id.jpg')
+                  : null,
+              child: (id >= 1 && id <= 6)
+                  ? null
+                  : const Icon(Icons.person, size: 40),
+            );
+          }),
           const SizedBox(height: 16),
           Obx(
             () => Text(
@@ -75,14 +84,16 @@ class AccountScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 4),
-          Obx(()=>  Text(
-            authController.userEmail ?? "",
-            style: AppTextStyle.withColor(
-              AppTextStyle.bodyMedium,
-              isDark ? Colors.grey[400]! : Colors.grey[600]!,
+          Obx(
+            () => Text(
+              authController.userEmail ?? "",
+              style: AppTextStyle.withColor(
+                AppTextStyle.bodyMedium,
+                isDark ? Colors.grey[400]! : Colors.grey[600]!,
+              ),
             ),
-          ),),
-         
+          ),
+
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: () => Get.to(() => const EditProfileScreen()),
@@ -245,13 +256,7 @@ class AccountScreen extends StatelessWidget {
                         Get.back();
 
                         if (result.success) {
-                          Get.snackbar(
-                            'Success',
-                            result.message,
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.green,
-                            colorText: Colors.white,
-                          );
+                          
 
                           Get.offAll(() => SinginScreen());
                         } else {

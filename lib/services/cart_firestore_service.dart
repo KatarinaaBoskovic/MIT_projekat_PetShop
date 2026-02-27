@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petshop/models/cart_item.dart';
 import 'package:petshop/models/product.dart';

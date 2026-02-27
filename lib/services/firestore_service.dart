@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -22,6 +24,7 @@ class FirestoreService {
         'updatedAt': FieldValue.serverTimestamp(),
         'isActive': true,
         'profileImageUrl': null,
+        'avatarId': null,
         'phoneNumber': null,
         'dateOfBirth': null,
         'gender': null,
@@ -31,6 +34,7 @@ class FirestoreService {
           'emailUpdates': true,
           'darkMode': false,
         },
+        
       };
 
       await _firestore.collection(_usersCollection).doc(uid).set(userData);
@@ -80,6 +84,7 @@ class FirestoreService {
     String? dateOfBirth,
     String? gender,
     String? profileImageUrl,
+     int? avatarId, 
   }) async {
     try {
       // Check if user document exists first
@@ -128,6 +133,9 @@ class FirestoreService {
       if (profileImageUrl != null) {
         updateData['profileImageUrl'] = profileImageUrl;
       }
+      if (avatarId != null) {
+  updateData['avatarId'] = avatarId;
+}
 
       //use set with merge to handle both create and update scenarios
 

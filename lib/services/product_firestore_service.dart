@@ -157,26 +157,25 @@ class ProductFirestoreService {
 
   //Get all categories
   static Future<List<String>> getAllCategories() async {
-  try {
-    final querySnapshot = await _firestore
-        .collection(_productsCollection)
-        .where('isActive', isEqualTo: true)
-        .get();
+    try {
+      final querySnapshot = await _firestore
+          .collection(_productsCollection)
+          .where('isActive', isEqualTo: true)
+          .get();
 
-    final categories = <String>{};
+      final categories = <String>{};
 
-    for (var doc in querySnapshot.docs) {
-      final data = doc.data();
-      if (data['category'] != null) {
-        categories.add(data['category'] as String);
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        if (data['category'] != null) {
+          categories.add(data['category'] as String);
+        }
       }
+
+      return categories.toList()..sort();
+    } catch (e) {
+      print('Error fetching categories: $e');
+      rethrow;
     }
-
-    return categories.toList()..sort();
-  } catch (e) {
-    print('Error fetching categories: $e');
-    rethrow;
   }
-}
-
 }

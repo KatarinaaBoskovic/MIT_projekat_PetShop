@@ -243,7 +243,6 @@ class CartController extends GetxController {
       if (success) {
         await loadCartItems();
         update();
-        
       }
 
       return success;
@@ -288,25 +287,29 @@ class CartController extends GetxController {
   }
 
   // Check if product is in cart
-bool isProductInCart(String productId, {String? selectedSize}) {
-  return _cartItems.any((item) =>
-      item.productId == productId &&
-      (selectedSize == null || item.selectedSize == selectedSize));
-}
-
-// Get cart item for product
-CartItem? getCartItem(String productId, {String? selectedSize}) {
-  try {
-    return _cartItems.firstWhere((item) =>
-        item.productId == productId &&
-        (selectedSize == null || item.selectedSize == selectedSize));
-  } catch (e) {
-    return null;
+  bool isProductInCart(String productId, {String? selectedSize}) {
+    return _cartItems.any(
+      (item) =>
+          item.productId == productId &&
+          (selectedSize == null || item.selectedSize == selectedSize),
+    );
   }
-}
 
-// Refresh cart
-Future<void> refreshCart() async {
-  await loadCartItems();
-}
+  // Get cart item for product
+  CartItem? getCartItem(String productId, {String? selectedSize}) {
+    try {
+      return _cartItems.firstWhere(
+        (item) =>
+            item.productId == productId &&
+            (selectedSize == null || item.selectedSize == selectedSize),
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Refresh cart
+  Future<void> refreshCart() async {
+    await loadCartItems();
+  }
 }

@@ -42,8 +42,8 @@ class _SizeSelectorState extends State<SizeSelector> {
           final isSelected = _selectedIndex == index;
           return GestureDetector(
             onTap: () {
-              setState(() =>_selectedIndex=index);
-              if(widget.onSizeSelected!=null){
+              setState(() => _selectedIndex = index);
+              if (widget.onSizeSelected != null) {
                 widget.onSizeSelected!(widget.sizes[index]);
               }
             },
@@ -72,7 +72,7 @@ class _SizeSelectorState extends State<SizeSelector> {
                         : isDark
                         ? Colors.grey[300]
                         : Colors.grey[700],
-                        fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

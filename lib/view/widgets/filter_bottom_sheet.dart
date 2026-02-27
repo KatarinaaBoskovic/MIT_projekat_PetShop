@@ -46,7 +46,7 @@ class FilterBottomSheet {
                         Theme.of(context).textTheme.bodyLarge!.color!,
                       ),
                     ),
-            
+
                     IconButton(
                       onPressed: () => Get.back(),
                       icon: Icon(
@@ -58,7 +58,7 @@ class FilterBottomSheet {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Price Range',
+                  'Price Range (RSD)',
                   style: AppTextStyle.withColor(
                     AppTextStyle.bodyLarge,
                     Theme.of(context).textTheme.bodyLarge!.color!,
@@ -86,7 +86,7 @@ class FilterBottomSheet {
                       ),
                     ),
                     const SizedBox(width: 16),
-            
+
                     Expanded(
                       child: TextField(
                         controller: maxPriceController,
@@ -108,7 +108,7 @@ class FilterBottomSheet {
                   ],
                 ),
                 const SizedBox(height: 10),
-            
+
                 Text(
                   'Categories',
                   style: AppTextStyle.withColor(
@@ -116,7 +116,7 @@ class FilterBottomSheet {
                     Theme.of(context).textTheme.bodyLarge!.color!,
                   ),
                 ),
-            
+
                 const SizedBox(height: 16),
                 GetBuilder<CategoryController>(
                   builder: (categoryController) {
@@ -126,7 +126,7 @@ class FilterBottomSheet {
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-            
+
                     if (categoryController.hasError) {
                       return SizedBox(
                         height: 50,
@@ -141,9 +141,9 @@ class FilterBottomSheet {
                         ),
                       );
                     }
-            
+
                     final categories = categoryController.categoryNames;
-            
+
                     return Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -154,11 +154,9 @@ class FilterBottomSheet {
                               selected: category == selectedCategory,
                               onSelected: (selected) {
                                 if (selected) {
-                                  if (selected) {
-                                    setState(() {
-                                      selectedCategory = category;
-                                    });
-                                  }
+                                  setState(() => selectedCategory = category);
+                                } else {
+                                  setState(() => selectedCategory = '');
                                 }
                               },
                               backgroundColor: Theme.of(context).cardColor,
@@ -187,12 +185,12 @@ class FilterBottomSheet {
                       // Apply filters
                       double minPrice = 0.0;
                       double maxPrice = double.infinity;
-            
+
                       if (minPriceController.text.isNotEmpty) {
                         minPrice =
                             double.tryParse(minPriceController.text) ?? 0.0;
                       }
-            
+
                       if (maxPriceController.text.isNotEmpty) {
                         maxPrice =
                             double.tryParse(maxPriceController.text) ??

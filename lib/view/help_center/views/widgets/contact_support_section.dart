@@ -49,7 +49,7 @@ class ContactSupportSection extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-            ), 
+            ),
             child: Text(
               'Contact Support',
               style: AppTextStyle.withColor(

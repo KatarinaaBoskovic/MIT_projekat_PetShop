@@ -33,8 +33,8 @@ class FirestoreService {
           'notifications': true,
           'emailUpdates': true,
           'darkMode': false,
+          'currency': 'RSD',
         },
-        
       };
 
       await _firestore.collection(_usersCollection).doc(uid).set(userData);
@@ -84,7 +84,7 @@ class FirestoreService {
     String? dateOfBirth,
     String? gender,
     String? profileImageUrl,
-     int? avatarId, 
+    int? avatarId,
   }) async {
     try {
       // Check if user document exists first
@@ -134,15 +134,13 @@ class FirestoreService {
         updateData['profileImageUrl'] = profileImageUrl;
       }
       if (avatarId != null) {
-  updateData['avatarId'] = avatarId;
-}
+        updateData['avatarId'] = avatarId;
+      }
 
-      //use set with merge to handle both create and update scenarios
-
-      await _firestore.collection(_usersCollection).doc(uid).set(
-        updateData,
-        SetOptions(merge:true),
-      );
+      await _firestore
+          .collection(_usersCollection)
+          .doc(uid)
+          .set(updateData, SetOptions(merge: true));
 
       return true;
     } catch (e) {
@@ -212,5 +210,21 @@ class FirestoreService {
     String uid,
   ) {
     return _firestore.collection(_usersCollection).doc(uid).snapshots();
+  }
+
+  static Future<bool> updateUserCurrency({
+    required String uid,
+    required String currency,
+  }) async {
+    try {
+      await _firestore.collection(_usersCollection).doc(uid).update({
+        'preferences.currency': currency,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (e) {
+      print('Error updating currency: $e');
+      return false;
+    }
   }
 }

@@ -122,8 +122,8 @@ class ProductController extends GetxController {
   void resetFilters() {
     _selectedCategory.value = 'All';
     _searchQuery.value = '';
-    _minPrice.value=0.0;
-    _maxPrice.value=double.infinity;
+    _minPrice.value = 0.0;
+    _maxPrice.value = double.infinity;
     _filteredProducts.value = _allProducts;
     update(); // Notify GetBuilder widgets
   }
@@ -207,16 +207,16 @@ class ProductController extends GetxController {
       print('Showing all products: ${_allProducts.length}');
     }
 
-// Apply price range filter
-if (_minPrice.value > 0 || _maxPrice.value < double.infinity) {
-  filtered = filtered.where((product) {
-    final price = product.price;
-    return price >= _minPrice.value && price <= _maxPrice.value;
-  }).toList();
+    // Apply price range filter
+    if (_minPrice.value > 0 || _maxPrice.value < double.infinity) {
+      filtered = filtered.where((product) {
+        final price = product.price;
+        return price >= _minPrice.value && price <= _maxPrice.value;
+      }).toList();
 
-  print('Filtering by price range: $_minPrice - $_maxPrice');
-  print('Found ${filtered.length} products in price range');
-}
+      print('Filtering by price range: $_minPrice - $_maxPrice');
+      print('Found ${filtered.length} products in price range');
+    }
 
     // Apply search filter
     if (_searchQuery.value.isNotEmpty) {
@@ -256,12 +256,12 @@ if (_minPrice.value > 0 || _maxPrice.value < double.infinity) {
   }
 
   // Set price range filter
-void setPriceRange(double min, double max) {
-  _minPrice.value = min;
-  _maxPrice.value = max;
-  _applyFilters();
-  update(); // Notify GetBuilder widgets
-}
+  void setPriceRange(double min, double max) {
+    _minPrice.value = min;
+    _maxPrice.value = max;
+    _applyFilters();
+    update(); // Notify GetBuilder widgets
+  }
 
   // Get product by ID
   Future<Product?> getProductById(String productId) async {
@@ -288,7 +288,9 @@ void setPriceRange(double min, double max) {
   // Get products for display
   List<Product> getDisplayProducts() {
     //if there is an active search query or price filter, always show filtered results
-    if (_searchQuery.value.isNotEmpty || _minPrice.value>0||_maxPrice.value<double.infinity) {
+    if (_searchQuery.value.isNotEmpty ||
+        _minPrice.value > 0 ||
+        _maxPrice.value < double.infinity) {
       return _filteredProducts;
     }
 

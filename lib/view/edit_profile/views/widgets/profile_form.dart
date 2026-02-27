@@ -216,10 +216,10 @@ class _ProfileFormState extends State<ProfileForm> {
       // Check if anything has changed
       final avatarChanged = authController.avatarChanged.value;
 
-if (newName == currentName &&
-    newEmail == currentEmail &&
-    newPhone == currentPhone &&
-    !avatarChanged) {
+      if (newName == currentName &&
+          newEmail == currentEmail &&
+          newPhone == currentPhone &&
+          !avatarChanged) {
         Get.snackbar(
           'No Changes',
           'No changes were made to your profile',
@@ -247,7 +247,6 @@ if (newName == currentName &&
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
         );
-        
 
         // Wait for snackbar to be visible before navigating back
         await Future.delayed(const Duration(milliseconds: 1000));

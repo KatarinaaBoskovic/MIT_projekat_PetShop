@@ -1,11 +1,10 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/utils/app_image.dart';
+import 'package:petshop/view/widgets/price_text.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -58,17 +57,23 @@ class ProductCard extends StatelessWidget {
                 child: GetBuilder<WishlistController>(
                   id: 'wishlist_${product.id}',
                   builder: (wishlistController) {
-                    final isInWishlist=wishlistController.isProductInWishlist(product.id);
+                    final isInWishlist = wishlistController.isProductInWishlist(
+                      product.id,
+                    );
                     return IconButton(
                       icon: Icon(
-                        isInWishlist ? Icons.favorite: Icons.favorite_border, 
-                        color:isInWishlist ? Theme.of(context).primaryColor : isDark ? Colors.grey[400]:Colors.grey,
-                        ),
+                        isInWishlist ? Icons.favorite : Icons.favorite_border,
+                        color: isInWishlist
+                            ? Theme.of(context).primaryColor
+                            : isDark
+                            ? Colors.grey[400]
+                            : Colors.grey,
+                      ),
                       onPressed: () {
                         wishlistController.toggleWishlist(product);
                       },
                     );
-                  }
+                  },
                 ),
               ),
               if (product.oldPrice != null && product.oldPrice! > product.price)
@@ -121,31 +126,38 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.01),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${product.price.toStringAsFixed(0)} RSD',
-                      style: AppTextStyle.withColor(
-                        AppTextStyle.withWeight(
-                          AppTextStyle.bodyLarge,
-                          FontWeight.bold,
+
+                Builder(
+                  builder: (context) {
+                    final priceRsd = product.price.toDouble();
+                    final oldRsd = product.oldPrice?.toDouble();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PriceText(
+                          priceRsd: priceRsd,
+                          style: AppTextStyle.withColor(
+                            AppTextStyle.withWeight(
+                              AppTextStyle.bodyLarge,
+                              FontWeight.bold,
+                            ),
+                            Theme.of(context).textTheme.bodyLarge!.color!,
+                          ),
                         ),
-                        Theme.of(context).textTheme.bodyLarge!.color!,
-                      ),
-                    ),
-                    if (product.oldPrice != null &&
-                        product.oldPrice! > product.price) ...[
-                      SizedBox(width: screenWidth * 0.01),
-                      Text(
-                        '${product.oldPrice!.toStringAsFixed(0)} RSD',
-                        style: AppTextStyle.withColor(
-                          AppTextStyle.bodySmaller,
-                          isDark ? Colors.grey[400]! : Colors.grey[600]!,
-                        ).copyWith(decoration: TextDecoration.lineThrough),
-                      ),
-                    ],
-                  ],
+                        if (oldRsd != null && oldRsd > priceRsd) ...[
+                          SizedBox(height: screenWidth * 0.005),
+                          PriceText(
+                            priceRsd: oldRsd,
+                            style: AppTextStyle.withColor(
+                              AppTextStyle.bodySmaller,
+                              isDark ? Colors.grey[400]! : Colors.grey[600]!,
+                            ).copyWith(decoration: TextDecoration.lineThrough),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

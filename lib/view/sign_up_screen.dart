@@ -167,31 +167,31 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-// Sign up button onPressed
-void _handleSignUp() async {
-  // Validate input fields
-  if (_nameController.text.trim().isEmpty) {
-    Get.snackbar(
-      'Error',
-      'Please enter your name',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-    return;
-  }
-  
-  if (_emailController.text.trim().isEmpty) {
-    Get.snackbar(
-      'Error',
-      'Please enter your email',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-    return;
-  }
-   if (!GetUtils.isEmail(_emailController.text.trim())) {
+  // Sign up button onPressed
+  void _handleSignUp() async {
+    // Validate input fields
+    if (_nameController.text.trim().isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter your name',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter your email',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    if (!GetUtils.isEmail(_emailController.text.trim())) {
       Get.snackbar(
         'Error',
         'Please enter a valid email address',
@@ -211,7 +211,7 @@ void _handleSignUp() async {
       );
       return;
     }
-    if (_passwordController.text.length<6) {
+    if (_passwordController.text.length < 6) {
       Get.snackbar(
         'Error',
         'Password must be at least 6 characters long.',
@@ -222,8 +222,8 @@ void _handleSignUp() async {
       return;
     }
 
-
-    if(_confirmPasswordController.text.trim() != _passwordController.text.trim()){
+    if (_confirmPasswordController.text.trim() !=
+        _passwordController.text.trim()) {
       Get.snackbar(
         'Error',
         'Passwords do not match.',
@@ -232,9 +232,7 @@ void _handleSignUp() async {
         colorText: Colors.white,
       );
       return;
-      
     }
-
 
     final AuthController authController = Get.find<AuthController>();
 
@@ -248,16 +246,15 @@ void _handleSignUp() async {
       final result = await authController.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        name:_nameController.text.trim(),
+        name: _nameController.text.trim(),
       );
 
       //close loading dialog
-Get.back();
+      Get.back();
 
       if (result.success) {
-        
-         final nav = Get.find<NavigationController>();
-  nav.currentIndex.value = 0;
+        final nav = Get.find<NavigationController>();
+        nav.currentIndex.value = 0;
         Get.offAll(() => const MainScreen());
       } else {
         Get.snackbar(
@@ -270,7 +267,7 @@ Get.back();
       }
     } catch (e) {
       // Close loading dialog
-Get.back();
+      Get.back();
 
       Get.snackbar(
         'Error',
@@ -280,8 +277,5 @@ Get.back();
         colorText: Colors.white,
       );
     }
+  }
 }
-
-
-}
- 

@@ -4,16 +4,14 @@ import 'package:petshop/view/help_center/views/widgets/category_card.dart';
 
 class HelpCategoriesSection extends StatelessWidget {
   const HelpCategoriesSection({super.key});
-static const categories = [
-      {'icon': Icons.shopping_bag_outlined, 'title': 'Orders'},
-      {'icon': Icons.payment_outlined, 'title': 'Payments'},
-      {'icon': Icons.local_shipping_outlined, 'title': 'Shipping'},
-      {'icon': Icons.assignment_return_outlined, 'title': 'Returns'},
-    ];
+  static const categories = [
+    {'icon': Icons.shopping_bag_outlined, 'title': 'Orders'},
+    {'icon': Icons.payment_outlined, 'title': 'Payments'},
+    {'icon': Icons.local_shipping_outlined, 'title': 'Shipping'},
+    {'icon': Icons.assignment_return_outlined, 'title': 'Returns'},
+  ];
   @override
   Widget build(BuildContext context) {
-    
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -36,14 +34,14 @@ static const categories = [
               mainAxisSpacing: 16,
               childAspectRatio: 1.5,
             ),
-            itemCount:categories.length ,
+            itemCount: categories.length,
             itemBuilder: (context, index) {
               return CategoryCard(
                 title: categories[index]['title'] as String,
                 icon: categories[index]['icon'] as IconData,
               );
             },
-          ), 
+          ),
         ],
       ),
     );

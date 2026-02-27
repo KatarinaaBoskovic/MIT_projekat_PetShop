@@ -44,7 +44,7 @@ class SaleBanner extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               final nav = Get.find<NavigationController>();
-  nav.changeIndex(1); // prebaci na Shopping tab
+              nav.changeIndex(1); // prebaci na Shopping tab
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,

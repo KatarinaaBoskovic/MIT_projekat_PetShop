@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/edit_profile/views/screens/edit_profile_screen.dart';
 import 'package:petshop/view/help_center/views/screens/help_center_screen.dart';
@@ -123,6 +124,7 @@ class AccountScreen extends StatelessWidget {
       {'icon': Icons.shopping_bag_outlined, 'title': 'My Orders'},
       {'icon': Icons.location_on_outlined, 'title': 'Shipping Address'},
       {'icon': Icons.help_outline, 'title': 'Help Center'},
+      {'icon': Icons.currency_exchange, 'title': 'Currency'},
       {'icon': Icons.logout_outlined, 'title': 'Logout'},
     ];
     return Padding(
@@ -156,10 +158,31 @@ class AccountScreen extends StatelessWidget {
                   Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
-              trailing: Icon(
-                Icons.chevron_right,
-                color: isDark ? Colors.grey[400] : Colors.grey[600],
-              ),
+              trailing: item['title'] == 'Currency'
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Obx(() {
+                          final currencyCtrl = Get.find<CurrencyController>();
+                          return Text(
+                            currencyCtrl.selectedCurrency.value,
+                            style: AppTextStyle.withColor(
+                              AppTextStyle.bodyMedium,
+                              isDark ? Colors.grey[400]! : Colors.grey[600]!,
+                            ),
+                          );
+                        }),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
+                        ),
+                      ],
+                    )
+                  : Icon(
+                      Icons.chevron_right,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    ),
               onTap: () {
                 if (item['title'] == 'Logout') {
                   _showLogoutDialog(context);
@@ -169,6 +192,8 @@ class AccountScreen extends StatelessWidget {
                   Get.to(() => ShippingAddressScreen());
                 } else if (item['title'] == 'Help Center') {
                   Get.to(() => const HelpCenterScreen());
+                } else if (item['title'] == 'Currency') {
+                  _showCurrencyPicker(context);
                 }
               },
             ),
@@ -176,6 +201,104 @@ class AccountScreen extends StatelessWidget {
         }).toList(),
       ),
     );
+  }
+
+  void _showCurrencyPicker(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currencyCtrl = Get.find<CurrencyController>();
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[700] : Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Choose Currency',
+              style: AppTextStyle.withColor(
+                AppTextStyle.h3,
+                Theme.of(context).textTheme.bodyLarge!.color!,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            _currencyTile(context, 'RSD', currencyCtrl),
+            const SizedBox(height: 12),
+            _currencyTile(context, 'EUR', currencyCtrl),
+            const SizedBox(height: 12),
+            _currencyTile(context, 'USD', currencyCtrl),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _currencyTile(
+    BuildContext context,
+    String currency,
+    CurrencyController currencyCtrl,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Obx(() {
+      final selected = currencyCtrl.selectedCurrency.value == currency;
+      return InkWell(
+        onTap: () async {
+          currencyCtrl.setCurrency(currency);
+
+          final auth = Get.find<AuthController>();
+          await auth.setCurrency(currency);
+
+          Get.back();
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected
+                  ? Theme.of(context).primaryColor
+                  : Colors.transparent,
+              width: 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(
+                currency,
+                style: AppTextStyle.withColor(
+                  AppTextStyle.bodyMedium,
+                  Theme.of(context).textTheme.bodyLarge!.color!,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                selected ? Icons.check_circle : Icons.radio_button_off,
+                color: selected
+                    ? Theme.of(context).primaryColor
+                    : (isDark ? Colors.grey[500] : Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -256,8 +379,6 @@ class AccountScreen extends StatelessWidget {
                         Get.back();
 
                         if (result.success) {
-                          
-
                           Get.offAll(() => SinginScreen());
                         } else {
                           Get.snackbar(

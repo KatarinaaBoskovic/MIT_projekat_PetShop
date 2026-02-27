@@ -6,6 +6,7 @@ import 'package:petshop/controllers/address_controller.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/controllers/category_controller.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/controllers/navigation_controller.dart';
 import 'package:petshop/controllers/product_contoller.dart';
 import 'package:petshop/controllers/theme_controller.dart';
@@ -27,6 +28,7 @@ void main() async {
   Get.put(WishlistController());
   Get.put(CartController());
   Get.put(AddressController());
+  Get.put(CurrencyController());
 
   //seed sample data to firestore for testing only
   await FirestoreDataSeeder.seedAllData();

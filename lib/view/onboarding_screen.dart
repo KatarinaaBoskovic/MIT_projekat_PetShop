@@ -26,17 +26,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Fast & Safe Delivery',
     ),
     OnboardingItem(
-      description: 'Manage your orders and enjoy a secure shopping experience at your fingertips.',
+      description:
+          'Manage your orders and enjoy a secure shopping experience at your fingertips.',
       image: 'assets/images/intro2.png',
       title: 'Easy Shopping',
     ),
   ];
 
-// Obrada pritiska na dugme za Get Started
+  // Obrada pritiska na dugme za Get Started
   void _handleGetStarted() {
     final AuthController authController = Get.find<AuthController>();
     authController.setFirstTimeDone();
-    Get.off(() =>  SinginScreen());
+    Get.off(() => SinginScreen());
   }
 
   @override

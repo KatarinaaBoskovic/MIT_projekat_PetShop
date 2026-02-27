@@ -57,85 +57,78 @@ class FirebaseAuthService {
   }
 
   // Sign in with email and password
-static Future<AuthResult> signInWithEmailAndPassword({
-  required String email,
-  required String password,
-}) async {
-  try {
-    final UserCredential result =
-        await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  static Future<AuthResult> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    return AuthResult(
-      success: true,
-      user: result.user,
-      message: 'Signed in successfully!',
-    );
-  } on FirebaseAuthException catch (e) {
-    return AuthResult(
-      success: false,
-      message: _getErrorMessage(e.code),
-    );
-  } catch (e){
-    return AuthResult(success: false, message: 'An unexpected error occurred. Please try again.');
+      return AuthResult(
+        success: true,
+        user: result.user,
+        message: 'Signed in successfully!',
+      );
+    } on FirebaseAuthException catch (e) {
+      return AuthResult(success: false, message: _getErrorMessage(e.code));
+    } catch (e) {
+      return AuthResult(
+        success: false,
+        message: 'An unexpected error occurred. Please try again.',
+      );
+    }
   }
-}
 
-// Send password reset email
-static Future<AuthResult> sendPasswordResetEmail({
-  required String email,
-}) async {
-  try {
-    await _auth.sendPasswordResetEmail(email: email);
+  // Send password reset email
+  static Future<AuthResult> sendPasswordResetEmail({
+    required String email,
+  }) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
 
-    return AuthResult(
-      success: true,
-      message: 'Password reset email sent successfully',
-    );
-  } on FirebaseAuthException catch (e) {
-    return AuthResult(
-      success: false,
-      message: _getErrorMessage(e.code),
-    );
-  } catch (e) {
-    return AuthResult(
-      success: false,
-      
-      message: 'An unexpected error occurred. Please try again. $e',
-    );
+      return AuthResult(
+        success: true,
+        message: 'Password reset email sent successfully',
+      );
+    } on FirebaseAuthException catch (e) {
+      return AuthResult(success: false, message: _getErrorMessage(e.code));
+    } catch (e) {
+      return AuthResult(
+        success: false,
+
+        message: 'An unexpected error occurred. Please try again. $e',
+      );
+    }
   }
-}
-// Sign out
-static Future<AuthResult> signOut() async {
-  try {
-    await _auth.signOut();
 
-    return AuthResult(
-      success: true,
-      message: 'Signed out successfully',
-    );
-  } catch (e) {
-    return AuthResult(
-      success: false,
-      message: 'Failed to sign out. Please try again',
-    );
+  // Sign out
+  static Future<AuthResult> signOut() async {
+    try {
+      await _auth.signOut();
+
+      return AuthResult(success: true, message: 'Signed out successfully');
+    } catch (e) {
+      return AuthResult(
+        success: false,
+        message: 'Failed to sign out. Please try again',
+      );
+    }
   }
-}
-// Check if user is signed in
-static bool get isSignedIn => _auth.currentUser != null;
 
-// Get user email
-static String? get userEmail => _auth.currentUser?.email;
+  // Check if user is signed in
+  static bool get isSignedIn => _auth.currentUser != null;
 
-// Get user display name
-static String? get userDisplayName =>
-    _auth.currentUser?.displayName;
+  // Get user email
+  static String? get userEmail => _auth.currentUser?.email;
 
-// Get user ID
-static String? get userId => _auth.currentUser?.uid;
+  // Get user display name
+  static String? get userDisplayName => _auth.currentUser?.displayName;
 
+  // Get user ID
+  static String? get userId => _auth.currentUser?.uid;
 
   // Helper method to get user-friendly error messages
   static String _getErrorMessage(String errorCode) {

@@ -175,7 +175,7 @@ class AddressCard extends StatelessWidget {
                   width: 1,
                   height: 24,
                   color: isDark ? Colors.grey[800] : Colors.grey[200],
-                ), 
+                ),
                 Expanded(
                   child: TextButton.icon(
                     onPressed: onSetDefault,
@@ -185,8 +185,8 @@ class AddressCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       foregroundColor: Theme.of(context).primaryColor,
                     ),
-                  ), 
-                ), 
+                  ),
+                ),
               ],
             ],
           ),

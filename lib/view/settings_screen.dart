@@ -55,14 +55,14 @@ class SettingsScreen extends StatelessWidget {
                 'Privacy Policy',
                 'View our privacy policy',
                 Icons.privacy_tip_outlined,
-                onTap: ()=>Get.to(()=>const PrivacyPolicyScreen()),
+                onTap: () => Get.to(() => const PrivacyPolicyScreen()),
               ),
               _buildNavigationTile(
                 context,
                 'Terms of Service',
                 'Read our terms of service',
                 Icons.description_outlined,
-                onTap: ()=>Get.to(()=>const TermsOfServiceScreen()),
+                onTap: () => Get.to(() => const TermsOfServiceScreen()),
               ),
             ]),
             _buildSection(context, 'About', [
@@ -200,9 +200,9 @@ class SettingsScreen extends StatelessWidget {
     BuildContext context,
     String title,
     String subtitle,
-    IconData icon,
-    {VoidCallback? onTap}
-  ) {
+    IconData icon, {
+    VoidCallback? onTap,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(

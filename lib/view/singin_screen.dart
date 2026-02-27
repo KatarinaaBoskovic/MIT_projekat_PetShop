@@ -192,10 +192,8 @@ class SinginScreen extends StatelessWidget {
       //close loading dialog
       Get.back();
       if (result.success) {
-       
-         final nav = Get.find<NavigationController>();
-  nav.currentIndex.value = 0;
-
+        final nav = Get.find<NavigationController>();
+        nav.currentIndex.value = 0;
 
         Get.offAll(() => const MainScreen());
       } else {

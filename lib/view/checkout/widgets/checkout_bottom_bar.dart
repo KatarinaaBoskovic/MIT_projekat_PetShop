@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 
 class CheckoutBottomBar extends StatelessWidget {
@@ -39,13 +41,22 @@ class CheckoutBottomBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: Text(
-            'Place Order (${totalAmount.toStringAsFixed(0)} RSD)',
-            style: AppTextStyle.withColor(
-              AppTextStyle.buttonMedium,
-              Colors.white,
-            ),
-          ),
+          child: Obx(() {
+            final currencyCtrl = Get.find<CurrencyController>();
+            final cur = currencyCtrl.selectedCurrency.value;
+
+            final converted = currencyCtrl.convertFromRsd(totalAmount, cur);
+
+            final formatted = currencyCtrl.format(converted, cur);
+
+            return Text(
+              'Place Order ($formatted)',
+              style: AppTextStyle.withColor(
+                AppTextStyle.buttonMedium,
+                Colors.white,
+              ),
+            );
+          }),
         ),
       ),
     );

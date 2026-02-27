@@ -60,8 +60,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             isDark ? Colors.white : Colors.black,
           ),
         ),
-
-       
       ),
       body: Column(
         children: [

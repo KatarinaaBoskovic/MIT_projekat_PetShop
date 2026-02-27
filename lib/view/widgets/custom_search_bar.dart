@@ -91,8 +91,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         onSubmitted: _performSearch,
         onTap: () {
           // Navigate to search screen when tapped
-              Get.to(()=>SearchResultsScreen(searchQuery: _searchController.text));
-
+          Get.to(
+            () => SearchResultsScreen(searchQuery: _searchController.text),
+          );
         },
       ),
     );
@@ -105,6 +106,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     productController.searchProducts(query.trim());
 
     // Navigate to search results screen
-    Get.to(()=>SearchResultsScreen(searchQuery: query.trim()));
+    Get.to(() => SearchResultsScreen(searchQuery: query.trim()));
   }
 }

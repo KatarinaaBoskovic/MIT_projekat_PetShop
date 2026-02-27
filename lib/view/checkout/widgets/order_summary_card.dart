@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:petshop/controllers/cart_controller.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 
 class OrderSummaryCard extends StatelessWidget {
@@ -23,19 +26,55 @@ class OrderSummaryCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        children: [_buildSummaryRow(context, 'Subtotal', '5999 RSD'),
-        const SizedBox(height: 8),
-        _buildSummaryRow(context, 'Shipping', '130 RSD'),
-        const SizedBox(height: 8),
-         _buildSummaryRow(context, 'Tax', '5400 RSD'),
-         const Padding(padding: EdgeInsets.symmetric(vertical: 12),
-         child: Divider(),
-         ),
-         _buildSummaryRow(context, 'Total', '11529 RSD',isTotal: true),
+      child: Obx(() {
+        final cart = Get.find<CartController>();
+        final currencyCtrl = Get.find<CurrencyController>();
+        final currency = currencyCtrl.selectedCurrency.value;
 
-        ],
-      ),
+        final subtotalRsd = cart.total.toDouble();
+
+        const shippingRsd = 130.0;
+        const taxRsd = 0.0;
+
+        final totalRsd = subtotalRsd + shippingRsd + taxRsd;
+
+        final subtotal = currencyCtrl.convertFromRsd(subtotalRsd, currency);
+        final shipping = currencyCtrl.convertFromRsd(shippingRsd, currency);
+        final tax = currencyCtrl.convertFromRsd(taxRsd, currency);
+        final total = currencyCtrl.convertFromRsd(totalRsd, currency);
+
+        return Column(
+          children: [
+            _buildSummaryRow(
+              context,
+              'Subtotal',
+              currencyCtrl.format(subtotal, currency),
+            ),
+            const SizedBox(height: 8),
+            _buildSummaryRow(
+              context,
+              'Shipping',
+              currencyCtrl.format(shipping, currency),
+            ),
+            const SizedBox(height: 8),
+            _buildSummaryRow(
+              context,
+              'Tax',
+              currencyCtrl.format(tax, currency),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(),
+            ),
+            _buildSummaryRow(
+              context,
+              'Total',
+              currencyCtrl.format(total, currency),
+              isTotal: true,
+            ),
+          ],
+        );
+      }),
     );
   }
 

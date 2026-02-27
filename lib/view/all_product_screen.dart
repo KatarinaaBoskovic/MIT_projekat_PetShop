@@ -33,7 +33,7 @@ class AllProductsScreen extends StatelessWidget {
           //search icon
           IconButton(
             onPressed: () {
-              Get.to(()=> const SearchResultsScreen(searchQuery: ''));
+              Get.to(() => const SearchResultsScreen(searchQuery: ''));
             },
             icon: Icon(
               Icons.search,
@@ -43,7 +43,7 @@ class AllProductsScreen extends StatelessWidget {
 
           //filter icon
           IconButton(
-            onPressed: ()=> FilterBottomSheet.show(context),
+            onPressed: () => FilterBottomSheet.show(context),
             icon: Icon(
               Icons.filter_list,
               color: isDark ? Colors.white : Colors.black,

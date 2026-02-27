@@ -30,103 +30,91 @@ class CategoryController extends GetxController {
     super.onInit();
     loadCategories();
   }
+
   // Load categories from Firestore
-Future<void> loadCategories() async {
-  _isLoading.value = true;
-  _hasError.value = false;
+  Future<void> loadCategories() async {
+    _isLoading.value = true;
+    _hasError.value = false;
 
-  try {
-    final categories =
-        await CategoryFirestoreService.getAllCategories();
-    _categories.value = categories;
-  } catch (e) {
-    _hasError.value = true;
-    _errorMessage.value =
-        "Failed to load categories. Please try again.";
-    print('Error loading categories: $e');
+    try {
+      final categories = await CategoryFirestoreService.getAllCategories();
+      _categories.value = categories;
+    } catch (e) {
+      _hasError.value = true;
+      _errorMessage.value = "Failed to load categories. Please try again.";
+      print('Error loading categories: $e');
 
-    // Clear categories on error
-    _categories.value = [];
-  } finally {
-    _isLoading.value = false;
+      // Clear categories on error
+      _categories.value = [];
+    } finally {
+      _isLoading.value = false;
+    }
   }
-}
-// Select category
-void selectCategory(String categoryName) {
-  if (categoryName == "All") {
-    _selectedCategory.value = null;
-  } else {
-    final category = _categories.firstWhereOrNull(
-      (cat) =>
-          cat.displayName == categoryName ||
-          cat.name == categoryName,
+
+  // Select category
+  void selectCategory(String categoryName) {
+    if (categoryName == "All") {
+      _selectedCategory.value = null;
+    } else {
+      final category = _categories.firstWhereOrNull(
+        (cat) => cat.displayName == categoryName || cat.name == categoryName,
+      );
+      _selectedCategory.value = category;
+    }
+
+    // Notify listeners that category selection changed
+    update();
+  }
+
+  // Get category by name
+  Category? getCategoryByName(String categoryName) {
+    return _categories.firstWhereOrNull(
+      (cat) => cat.displayName == categoryName || cat.name == categoryName,
     );
-    _selectedCategory.value = category;
   }
 
-  // Notify listeners that category selection changed
-  update();
-}
-
-// Get category by name
-Category? getCategoryByName(String categoryName) {
-  return _categories.firstWhereOrNull(
-    (cat) =>
-        cat.displayName == categoryName ||
-        cat.name == categoryName,
-  );
-}
-
-// Get category by ID
-Future<Category?> getCategoryById(String categoryId) async {
-  try {
-    return await CategoryFirestoreService.getCategoryById(categoryId);
-  } catch (e) {
-    print('Error getting category by ID: $e');
-    return null;
-  }
-}
-
-// Refresh categories
-Future<void> refreshCategories() async {
-  await loadCategories();
-}
-
-// Get selected category name
-String get selectedCategoryName {
-  return _selectedCategory.value?.displayName ?? 'All';
-}
-
-// Check if category is selected
-bool isCategorySelected(String categoryName) {
-  if (categoryName == 'All') {
-    return _selectedCategory.value == null;
+  // Get category by ID
+  Future<Category?> getCategoryById(String categoryId) async {
+    try {
+      return await CategoryFirestoreService.getCategoryById(categoryId);
+    } catch (e) {
+      print('Error getting category by ID: $e');
+      return null;
+    }
   }
 
-  return _selectedCategory.value?.displayName == categoryName ||
-      _selectedCategory.value?.name == categoryName;
-}
-
-// Get currently selected category name for display
-String get selectedCategoryDisplayName {
-  return _selectedCategory.value?.displayName ?? 'All';
-}
-
-// Get categories with fallback
-List<String> getCategoriesWithFallback() {
-  if (_categories.isNotEmpty) {
-    return categoryNames;
-  } else {
-    // fallback categories if Firestore is empty or loading
-    return [
-     'All',
-  'Food',
-  'Care',
-  'Equipment',
-  'Clothes',
-  'Toys',
-  'Health'
-    ];
+  // Refresh categories
+  Future<void> refreshCategories() async {
+    await loadCategories();
   }
-}
+
+  // Get selected category name
+  String get selectedCategoryName {
+    return _selectedCategory.value?.displayName ?? 'All';
+  }
+
+  // Check if category is selected
+  bool isCategorySelected(String categoryName) {
+    if (categoryName == 'All') {
+      return _selectedCategory.value == null;
+    }
+
+    return _selectedCategory.value?.displayName == categoryName ||
+        _selectedCategory.value?.name == categoryName;
+  }
+
+  // Get currently selected category name for display
+  String get selectedCategoryDisplayName {
+    return _selectedCategory.value?.displayName ?? 'All';
+  }
+
+  // Get categories with fallback
+  List<String> getCategoriesWithFallback() {
+    if (_categories.isNotEmpty) {
+      return categoryNames;
+    } else {
+      // fallback categories if Firestore is empty or loading
+      return ['All', 'Food', 'Care', 'Equipment', 'Clothes', 'Toys', 'Health'];
+    }
+  }
 }

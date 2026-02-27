@@ -9,9 +9,7 @@ class AppThemes {
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0,
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
+      iconTheme: IconThemeData(color: Colors.black),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: const Color(0xFF4DB6AC),
@@ -25,26 +23,23 @@ class AppThemes {
       selectedItemColor: Color(0xFF4DB6AC),
       unselectedItemColor: Colors.grey,
     ),
-
   );
 
-//dark theme
-static final dark = ThemeData(
+  //dark theme
+  static final dark = ThemeData(
     primaryColor: const Color(0xFF4DB6AC),
     scaffoldBackgroundColor: const Color(0xFF121212),
     brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(
-      backgroundColor:  Color(0xFF121212),
+      backgroundColor: Color(0xFF121212),
       elevation: 0,
-      iconTheme: IconThemeData(
-        color: Colors.white,
-      ),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: const Color(0xFF4DB6AC),
       primary: const Color(0xFF4DB6AC),
       brightness: Brightness.dark,
-      surface:  const Color(0xFF121212),
+      surface: const Color(0xFF121212),
     ),
     cardColor: const Color(0xFF1E1E1E),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -52,6 +47,5 @@ static final dark = ThemeData(
       selectedItemColor: Color(0xFF4DB6AC),
       unselectedItemColor: Colors.grey,
     ),
-
   );
 }

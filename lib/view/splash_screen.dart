@@ -27,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate based on auth state
     if (authController.isFirstTime) {
-      Get.off(() =>const OnboardingScreen());
+      Get.off(() => const OnboardingScreen());
     } else if (authController.isLoggedIn) {
-      Get.off(() =>const MainScreen());
+      Get.off(() => const MainScreen());
     } else {
       Get.off(() => SinginScreen());
     }
@@ -37,8 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(

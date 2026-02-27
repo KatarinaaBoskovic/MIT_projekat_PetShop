@@ -18,7 +18,7 @@ class AppTextStyle {
     fontSize: 18,
     fontWeight: FontWeight.w600,
   );
-static TextStyle h4 = GoogleFonts.poppins(
+  static TextStyle h4 = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
   );
@@ -61,7 +61,7 @@ static TextStyle h4 = GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
-// Pomoćna funkcija za varijacije boja
+  // Pomoćna funkcija za varijacije boja
   static TextStyle withColor(TextStyle style, Color color) {
     return style.copyWith(color: color);
   }

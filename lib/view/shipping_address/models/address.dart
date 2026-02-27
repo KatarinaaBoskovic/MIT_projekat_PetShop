@@ -20,5 +20,5 @@ class Address {
     this.isDefault = false,
     this.type = AddressType.home,
   });
-  String get typeString=>type.name;
+  String get typeString => type.name;
 }

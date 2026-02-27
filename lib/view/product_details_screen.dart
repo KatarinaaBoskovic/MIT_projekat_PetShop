@@ -5,6 +5,7 @@ import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/cart_screen.dart';
+import 'package:petshop/view/widgets/price_text.dart';
 import 'package:petshop/view/widgets/size_selector.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:petshop/utils/app_image.dart';
@@ -127,8 +128,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       Column(
                         children: [
-                          Text(
-                            '${widget.product.price.toStringAsFixed(0)} RSD',
+                          PriceText(
+                            priceRsd: widget.product.price.toDouble(),
                             style: AppTextStyle.withColor(
                               AppTextStyle.h2,
                               Theme.of(
@@ -137,10 +138,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                           if (widget.product.oldPrice != null &&
-                              widget.product.oldPrice! >
-                                  widget.product.price) ...[
-                            Text(
-                              '${widget.product.oldPrice!.toStringAsFixed(0)} RSD',
+                              widget.product.oldPrice! > widget.product.price)
+                            PriceText(
+                              priceRsd: widget.product.oldPrice!.toDouble(),
                               style:
                                   AppTextStyle.withColor(
                                     AppTextStyle.bodySmall,
@@ -151,25 +151,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     decoration: TextDecoration.lineThrough,
                                   ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '${widget.product.discountPercentage}% OFF',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                     ],

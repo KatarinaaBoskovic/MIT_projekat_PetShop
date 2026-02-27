@@ -56,7 +56,7 @@ class WishlistController extends GetxController {
   Future<void> loadWishlistItems() async {
     _isLoading.value = true;
     _hasError.value = false;
-   
+
     try {
       final userId = _userId;
       if (userId == null) {
@@ -71,7 +71,7 @@ class WishlistController extends GetxController {
 
       _wishlistItems.value = items;
       _itemCount.value = items.length;
-     update();
+      update();
     } catch (e) {
       _hasError.value = true;
       _errorMessage.value = "Failed to load wishlist items. Please try again.";
@@ -103,7 +103,6 @@ class WishlistController extends GetxController {
       if (success) {
         await loadWishlistItems(); // Refresh wishlist
         update();
-        
       } else {
         Get.snackbar(
           'Error',
@@ -148,7 +147,6 @@ class WishlistController extends GetxController {
       if (success) {
         await loadWishlistItems(); // Refresh wishlist
         update();
-        
       }
       return success;
     } catch (e) {
@@ -158,54 +156,56 @@ class WishlistController extends GetxController {
   }
 
   // Toggle product in wishlist
-  
+
   Future<bool> toggleWishlist(Product product) async {
-  try{
-final userId = _userId;
-if (userId == null) {
-    Get.snackbar(
-      'Authentication Required',
-      'Please sign in to manage your wishlist',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-    );
-    return false;
-  }
-    final isInWishlist = isProductInWishlist(product.id);
-    if(isInWishlist){
-      _wishlistItems.removeWhere((item)=>item.productId==product.id);
-      _itemCount.value=_wishlistItems.length;
-      update();
-      update(['wishlist_${product.id}']);
-
-      final success=await removeFromWishlist(product.id);
-      if(!success){
-        await loadWishlistItems();
+    try {
+      final userId = _userId;
+      if (userId == null) {
+        Get.snackbar(
+          'Authentication Required',
+          'Please sign in to manage your wishlist',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+        return false;
       }
-      return success;
-    }else{
-      final tempItem=WishlistItem(id: 'temp_${DateTime.now().millisecondsSinceEpoch}', userId: userId, productId: product.id, product: product, addedAt: DateTime.now(),);
-      _wishlistItems.insert(0, tempItem);
-      _itemCount.value=_wishlistItems.length;
-      update();
-      update(['wishlist_${product.id}']);
+      final isInWishlist = isProductInWishlist(product.id);
+      if (isInWishlist) {
+        _wishlistItems.removeWhere((item) => item.productId == product.id);
+        _itemCount.value = _wishlistItems.length;
+        update();
+        update(['wishlist_${product.id}']);
 
-      final success=await addToWishlist(product);
-      if(!success){
-        await loadWishlistItems();
+        final success = await removeFromWishlist(product.id);
+        if (!success) {
+          await loadWishlistItems();
+        }
+        return success;
+      } else {
+        final tempItem = WishlistItem(
+          id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+          userId: userId,
+          productId: product.id,
+          product: product,
+          addedAt: DateTime.now(),
+        );
+        _wishlistItems.insert(0, tempItem);
+        _itemCount.value = _wishlistItems.length;
+        update();
+        update(['wishlist_${product.id}']);
+
+        final success = await addToWishlist(product);
+        if (!success) {
+          await loadWishlistItems();
+        }
+        return success;
       }
-      return success;
-
+    } catch (e) {
+      print('Error toggling wishlist: $e');
+      await loadWishlistItems();
+      return false;
     }
-    }
-  catch(e){
-    print('Error toggling wishlist: $e');
-    await loadWishlistItems();
-    return false;
   }
-  
-  
-}
 
   // Check if product is in wishlist
   bool isProductInWishlist(String productId) {
@@ -257,12 +257,12 @@ if (userId == null) {
   }
 
   // Refresh wishlist
-Future<void> refreshWishlist() async {
-  await loadWishlistItems();
-}
+  Future<void> refreshWishlist() async {
+    await loadWishlistItems();
+  }
 
-// Get products from wishlist
-List<Product> get wishlistProducts {
-  return _wishlistItems.map((item) => item.product).toList();
-}
+  // Get products from wishlist
+  List<Product> get wishlistProducts {
+    return _wishlistItems.map((item) => item.product).toList();
+  }
 }

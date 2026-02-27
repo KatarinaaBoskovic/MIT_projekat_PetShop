@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:petshop/controllers/address_controller.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/services/firebase_auth_service.dart';
 import 'package:petshop/services/firestore_service.dart';
 
@@ -33,8 +34,9 @@ class AuthController extends GetxController {
   Map<String, dynamic>? get userPreferences =>
       _userDocument.value?['preferences'];
   int get avatarId => (_userDocument.value?['avatarId'] as int?) ?? 0;
-  
+  final RxString userCurrencyRx = 'RSD'.obs;
 
+  String get userCurrency => userCurrencyRx.value;
   @override
   void onInit() {
     super.onInit();
@@ -61,6 +63,16 @@ class AuthController extends GetxController {
       final userDoc = await FirestoreService.getUserDocument(uid);
 
       _userDocument.value = userDoc;
+
+      final cur =
+          (userDoc?['preferences']?['currency'] as String?)?.toUpperCase() ??
+          'RSD';
+
+      userCurrencyRx.value = cur;
+
+      if (Get.isRegistered<CurrencyController>()) {
+        Get.find<CurrencyController>().setCurrency(cur);
+      }
     } catch (e) {
       print('Error loading user document: $e');
     }
@@ -81,6 +93,11 @@ class AuthController extends GetxController {
       } else {
         // Clear user document when signed out
         _userDocument.value = null;
+        if (Get.isRegistered<CurrencyController>()) {
+          Get.find<CurrencyController>().setCurrency('RSD');
+        }
+        userCurrencyRx.value = 'RSD';
+
         // Reset address controller when user logs out
         if (Get.isRegistered<AddressController>()) {
           Get.find<AddressController>().loadAddresses();
@@ -253,24 +270,49 @@ class AuthController extends GetxController {
       _isLoading.value = false;
     }
   }
+
   Future<bool> setAvatarId(int id) async {
-  if (_user.value == null) return false;
+    if (_user.value == null) return false;
 
-  _isLoading.value = true;
-  try {
-    final success = await FirestoreService.updateUserProfile(
-      uid: _user.value!.uid,
-      avatarId: id,
-    );
+    _isLoading.value = true;
+    try {
+      final success = await FirestoreService.updateUserProfile(
+        uid: _user.value!.uid,
+        avatarId: id,
+      );
 
-    if (success) {
-      avatarChanged.value = true;
-      await _loadUserDocument(_user.value!.uid);
+      if (success) {
+        avatarChanged.value = true;
+        await _loadUserDocument(_user.value!.uid);
+      }
+
+      return success;
+    } finally {
+      _isLoading.value = false;
     }
-
-    return success;
-  } finally {
-    _isLoading.value = false;
   }
-}
+
+  Future<bool> setCurrency(String currency) async {
+    if (_user.value == null) return false;
+
+    _isLoading.value = true;
+    try {
+      final upper = currency.toUpperCase();
+
+      final success = await FirestoreService.updateUserCurrency(
+        uid: _user.value!.uid,
+        currency: upper,
+      );
+
+      if (success) {
+        userCurrencyRx.value = upper;
+        if (Get.isRegistered<CurrencyController>()) {
+          Get.find<CurrencyController>().setCurrency(upper);
+        }
+      }
+      return success;
+    } finally {
+      _isLoading.value = false;
+    }
+  }
 }

@@ -77,54 +77,55 @@ class Product {
     );
   }
   // Convert Product to Firestore document
-Map<String, dynamic> toFirestore() {
-  return {
-    'name': name,
-    'category': category,
-    'subcategory': subcategory,
-    'price': price,
-    'oldPrice': oldPrice,
-    'currency': currency,
-    'images': images,
-    'primaryImage': primaryImage,
-    'brand': brand,
-    'sku': sku,
-    'stock': stock,
-    'isActive': isActive,
-    'isFeatured': isFeatured,
-    'isOnSale': isOnSale,
-    'rating': rating,
-    'reviewCount': reviewCount,
-    'tags': tags,
-    'specifications': specifications,
-    'description': description,
-    'updatedAt': FieldValue.serverTimestamp(),
-  };
+  Map<String, dynamic> toFirestore() {
+    return {
+      'name': name,
+      'category': category,
+      'subcategory': subcategory,
+      'price': price,
+      'oldPrice': oldPrice,
+      'currency': currency,
+      'images': images,
+      'primaryImage': primaryImage,
+      'brand': brand,
+      'sku': sku,
+      'stock': stock,
+      'isActive': isActive,
+      'isFeatured': isFeatured,
+      'isOnSale': isOnSale,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'tags': tags,
+      'specifications': specifications,
+      'description': description,
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+  }
+
+  // Backward compatibility getter for imageUrl
+  String get imageUrl => primaryImage;
+
+  // check if product has discount
+  bool get hasDiscount => oldPrice != null && oldPrice! > price;
+
+  // Calculate discount percentage
+  int get discountPercentage {
+    if (!hasDiscount) return 0;
+    return (((oldPrice! - price) / oldPrice!) * 100).round();
+  }
+
+  // Check if product is in stock
+  bool get isInStock => stock > 0;
+
+  // Get formatted price
+  String? get formattedOldPrice =>
+      oldPrice != null ? '\$${oldPrice!.toStringAsFixed(2)}' : null;
 }
-// Backward compatibility getter for imageUrl
-String get imageUrl => primaryImage;
 
-// check if product has discount
-bool get hasDiscount => oldPrice != null && oldPrice! > price;
-
-// Calculate discount percentage
-int get discountPercentage {
-  if (!hasDiscount) return 0;
-  return (((oldPrice! - price) / oldPrice!) * 100).round();
-}
-
-// Check if product is in stock
-bool get isInStock => stock > 0;
-
-// Get formatted price
-String? get formattedOldPrice =>
-    oldPrice != null ? '\$${oldPrice!.toStringAsFixed(2)}' : null;
-
-}
 //legacy dummy data for backwark compatibility
 final List<Product> products = [
   const Product(
-    id:'dummy-1',
+    id: 'dummy-1',
     name: 'SNOOZA-Dog Bed',
     category: 'Equipment',
     price: 4500,
@@ -135,7 +136,7 @@ final List<Product> products = [
         'Snooza Ortho Sofa is designed for older dogs who find it difficult to get in and out of their regular beds or baskets. The comfortable and durable Ortho Sofa has a secure orthopaedic support foam base that is stable and comfortable, as well as soft padding that provides a sense of comfort and calm for your pet.',
   ),
   const Product(
-    id:'dummy-2',
+    id: 'dummy-2',
     name: 'Essential Dog Hoodie',
     category: 'Clothes',
     price: 2300,
@@ -146,7 +147,7 @@ final List<Product> products = [
         'Signature Spark Paws Butterstretch™ fabric. Very stretchy, durable, soft texture. Fluffy cozy fleece interior. Machine wash cold, line dry. 55% Cotton, 40% Polyester, 5% Spandex',
   ),
   const Product(
-    id:'dummy-3',
+    id: 'dummy-3',
     name: 'Zolux Wild Rope',
     category: 'Toys',
     price: 1030,
@@ -156,7 +157,7 @@ final List<Product> products = [
     description: 'Made from beech wood and 100% cotton rope',
   ),
   const Product(
-    id:'dummy-4',
+    id: 'dummy-4',
     name: 'Orijen Puppy',
     category: 'Food',
     price: 13500,
@@ -166,5 +167,4 @@ final List<Product> products = [
     description:
         'Orijen Puppy provides biologically appropriate nutrition for puppies, with an emphasis on a high protein content derived from fresh chicken, turkey, fish, and chicken offal.',
   ),
-
 ];

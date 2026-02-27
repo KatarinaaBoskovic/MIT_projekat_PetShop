@@ -22,13 +22,13 @@ class AddressRepository {
         zipCode: '10002',
         type: AddressType.office,
       ),
-      
     ];
   }
-  Address? getDefaultAddress(){
+
+  Address? getDefaultAddress() {
     return getAddresses().firstWhere(
-      (address)=>address.isDefault,
-      orElse: ()=>getAddresses().first,
+      (address) => address.isDefault,
+      orElse: () => getAddresses().first,
     );
   }
 }

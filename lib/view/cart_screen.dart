@@ -5,6 +5,7 @@ import 'package:petshop/models/cart_item.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/checkout/screens/checkout_screen.dart';
 import 'package:petshop/utils/app_image.dart';
+import 'package:petshop/view/widgets/price_text.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -177,33 +178,27 @@ class CartScreen extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+
                           children: [
-                            Text(
-                              '${product.price.toStringAsFixed(0)} RSD',
+                            PriceText(
+                              priceRsd: product.price.toDouble(),
                               style: AppTextStyle.withColor(
                                 AppTextStyle.h3,
                                 Theme.of(context).primaryColor,
                               ),
                             ),
-
                             if (product.oldPrice != null &&
                                 product.oldPrice! > product.price) ...[
                               const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Text(
-                                    '${product.oldPrice!.toStringAsFixed(0)} RSD',
-                                    style:
-                                        AppTextStyle.withColor(
-                                          AppTextStyle.bodySmall,
-                                          Colors.grey[500]!,
-                                        ).copyWith(
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                        ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                ],
+                              PriceText(
+                                priceRsd: product.oldPrice!.toDouble(),
+                                style:
+                                    AppTextStyle.withColor(
+                                      AppTextStyle.bodySmall,
+                                      Colors.grey[500]!,
+                                    ).copyWith(
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
                               ),
                             ],
                           ],
@@ -394,8 +389,8 @@ class CartScreen extends StatelessWidget {
                   Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
-              Text(
-                '${cartController.total.toStringAsFixed(0)} RSD',
+              PriceText(
+                priceRsd: cartController.total.toDouble(),
                 style: AppTextStyle.withColor(
                   AppTextStyle.h2,
                   Theme.of(context).primaryColor,

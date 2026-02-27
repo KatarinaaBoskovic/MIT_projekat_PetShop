@@ -29,7 +29,7 @@ class HomeScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       final nav = Get.find<NavigationController>();
-                      nav.currentIndex.value = 3; 
+                      nav.currentIndex.value = 3;
                     },
                     child: GetX<AuthController>(
                       builder: (authController) {

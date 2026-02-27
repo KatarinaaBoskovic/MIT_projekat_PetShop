@@ -36,7 +36,7 @@ class _CategoryChipsState extends State<CategoryChips> {
             ),
           );
         }
-        final categories=categoryController.getCategoriesWithFallback();
+        final categories = categoryController.getCategoriesWithFallback();
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -53,20 +53,27 @@ class _CategoryChipsState extends State<CategoryChips> {
                     label: Text(
                       categories[index],
                       style: AppTextStyle.withColor(
-                       productController.selectedCategory==categories[index]
-                       ? AppTextStyle.withWeight(AppTextStyle.bodySmall, FontWeight.w600)
-                       : AppTextStyle.bodySmall,
-                       productController.selectedCategory==categories[index]
-                       ? Colors.white : isDark? Colors.grey[300]!: Colors.grey[600]!,                    
-                       ),
+                        productController.selectedCategory == categories[index]
+                            ? AppTextStyle.withWeight(
+                                AppTextStyle.bodySmall,
+                                FontWeight.w600,
+                              )
+                            : AppTextStyle.bodySmall,
+                        productController.selectedCategory == categories[index]
+                            ? Colors.white
+                            : isDark
+                            ? Colors.grey[300]!
+                            : Colors.grey[600]!,
+                      ),
                     ),
-                    selected: productController.selectedCategory==categories[index],
+                    selected:
+                        productController.selectedCategory == categories[index],
                     onSelected: (bool selected) {
-                     if(selected){
-                      //update both controllers
-                      categoryController.selectCategory(categories[index]);
-                      productController.filterByCategory(categories[index]);
-                     }
+                      if (selected) {
+                        //update both controllers
+                        categoryController.selectCategory(categories[index]);
+                        productController.filterByCategory(categories[index]);
+                      }
                     },
                     selectedColor: Theme.of(context).primaryColor,
                     backgroundColor: isDark
@@ -75,7 +82,10 @@ class _CategoryChipsState extends State<CategoryChips> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    elevation: productController.selectedCategory == categories[index] ? 2 : 0,
+                    elevation:
+                        productController.selectedCategory == categories[index]
+                        ? 2
+                        : 0,
                     pressElevation: 0,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -87,7 +97,9 @@ class _CategoryChipsState extends State<CategoryChips> {
                     ),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     side: BorderSide(
-                      color: productController.selectedCategory == categories[index]
+                      color:
+                          productController.selectedCategory ==
+                              categories[index]
                           ? Colors.transparent
                           : isDark
                           ? Colors.grey[700]!

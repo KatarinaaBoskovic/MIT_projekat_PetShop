@@ -37,7 +37,7 @@ class NotificationUtils {
     }
   }
 
-  static Color getIconColor(BuildContext context, NotificationType type){
+  static Color getIconColor(BuildContext context, NotificationType type) {
     switch (type) {
       case NotificationType.order:
         return Theme.of(context).primaryColor;

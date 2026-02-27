@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/main_screen.dart';
 import 'package:petshop/view/my_orders/view/screens/my_orders_screen.dart';
@@ -49,6 +50,26 @@ class OrderConfirmationScreen extends StatelessWidget {
                   isDark ? Colors.grey[400]! : Colors.grey[600]!,
                 ),
               ),
+              const SizedBox(height: 16),
+              Obx(() {
+                final currencyCtrl = Get.find<CurrencyController>();
+                final currency = currencyCtrl.selectedCurrency.value;
+
+                final converted = currencyCtrl.convertFromRsd(
+                  totalAmount,
+                  currency,
+                );
+
+                return Text(
+                  'Total: ${currencyCtrl.format(converted, currency)}',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.withColor(
+                    AppTextStyle.h3,
+                    Theme.of(context).primaryColor,
+                  ),
+                );
+              }),
+              const SizedBox(height: 48),
               const SizedBox(height: 48),
               ElevatedButton(
                 onPressed: () {
@@ -75,7 +96,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  Get.offAll(()=>const MainScreen());
+                  Get.offAll(() => const MainScreen());
                 },
                 child: Text(
                   'Continue Shopping',

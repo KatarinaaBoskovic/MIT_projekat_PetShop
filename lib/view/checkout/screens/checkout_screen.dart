@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/checkout/widgets/address_card.dart';
 import 'package:petshop/view/checkout/widgets/checkout_bottom_bar.dart';
@@ -50,17 +51,22 @@ class CheckoutScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: CheckoutBottomBar(
-        totalAmount: 11529,
-        onPlaceOrder: () {
-          //generate a random order number(later from backend)
-          final orderNumber =
-              'ORD${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+      bottomNavigationBar: GetBuilder<CartController>(
+        builder: (cart) {
+          return CheckoutBottomBar(
+            totalAmount: cart.total,
+            onPlaceOrder: () {
+              final orderNumber =
+                  'ORD${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
 
-          Get.to(() =>  OrderConfirmationScreen(
-            orderNumber: orderNumber,
-            totalAmount: 11529,
-          ));
+              Get.to(
+                () => OrderConfirmationScreen(
+                  orderNumber: orderNumber,
+                  totalAmount: cart.total,
+                ),
+              );
+            },
+          );
         },
       ),
     );

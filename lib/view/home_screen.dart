@@ -6,6 +6,7 @@ import 'package:petshop/controllers/theme_controller.dart';
 import 'package:petshop/view/all_product_screen.dart';
 import 'package:petshop/view/cart_screen.dart';
 import 'package:petshop/view/notifications/view/notifications_screen.dart';
+import 'package:petshop/view/singin_screen.dart';
 import 'package:petshop/view/widgets/category_chips.dart';
 import 'package:petshop/view/widgets/custom_search_bar.dart';
 import 'package:petshop/view/widgets/product_grid.dart';
@@ -28,6 +29,11 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      final auth = Get.find<AuthController>();
+                      if (auth.user == null) {
+                        Get.to(() => SinginScreen());
+                        return;
+                      }
                       final nav = Get.find<NavigationController>();
                       nav.currentIndex.value = 3;
                     },
@@ -58,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                             'Hello ${authController.userName?.split(' ').first ?? 'User'}',
                             style: const TextStyle(
                               color: Colors.grey,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                           const Text(
@@ -74,15 +80,32 @@ class HomeScreen extends StatelessWidget {
                   ),
 
                   Spacer(),
-                  //notification icon
-                  IconButton(
-                    onPressed: () => Get.to(() => NotificationsScreen()),
-                    icon: const Icon(Icons.notifications_outlined),
-                  ),
-                  //cart button
-                  IconButton(
-                    onPressed: () => Get.to(() => const CartScreen()),
-                    icon: const Icon(Icons.shopping_bag_outlined),
+                  GetX<AuthController>(
+                    builder: (authController) {
+                      final isGuest = authController.user == null;
+
+                      if (isGuest) {
+                        return TextButton(
+                          onPressed: () => Get.to(() => SinginScreen()),
+                          child: const Text('Sign in / Sign up'),
+                        );
+                      }
+
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () =>
+                                Get.to(() => NotificationsScreen()),
+                            icon: const Icon(Icons.notifications_outlined),
+                          ),
+                          IconButton(
+                            onPressed: () => Get.to(() => const CartScreen()),
+                            icon: const Icon(Icons.shopping_bag_outlined),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   //theme button
                   GetBuilder<ThemeController>(

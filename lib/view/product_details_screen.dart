@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/cart_controller.dart';
 import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/models/product.dart';
@@ -100,6 +101,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               : (isDark ? Colors.white : Colors.black),
                         ),
                         onPressed: () {
+                          if (!_requireLogin()) return;
                           wishlistController.toggleWishlist(widget.product);
                         },
                       );
@@ -267,7 +269,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     );
                     return OutlinedButton(
                       onPressed: widget.product.stock > 0
-                          ? () => _addToCart(cartController)
+                          ? () {
+                              if (!_requireLogin()) return;
+                              _addToCart(cartController);
+                            }
                           : null,
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
@@ -312,15 +317,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             return;
                           }
 
+                          if (!_requireLogin()) return;
+
                           // dodaj u cart
-                          await cartController.addToCart(
+                          final success = await cartController.addToCart(
                             product: widget.product,
                             quantity: 1,
                             selectedSize: selectedSize,
                           );
 
-                          // idi na cart screen
-                          Get.to(() => const CartScreen());
+                          // idi na cart screen samo ako je uspešno
+                          if (success) {
+                            Get.to(() => const CartScreen());
+                          }
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -343,6 +352,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ),
     );
+  }
+
+  bool _requireLogin() {
+    final auth = Get.find<AuthController>();
+    if (auth.user == null) {
+      Get.snackbar(
+        'Login required',
+        'Login or Signup first please.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
+      return false;
+    }
+    return true;
   }
 
   // Add product to cart

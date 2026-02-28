@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/product_contoller.dart';
 
@@ -18,7 +19,22 @@ class NavigationController extends GetxController {
     });
   }
 
+  bool _isGuest() => FirebaseAuth.instance.currentUser == null;
+
   void changeIndex(int index) {
+    // Guest sme samo Home (0) i Shopping (1)
+    final isRestrictedTab = (index == 2 || index == 3);
+
+    if (_isGuest() && isRestrictedTab) {
+      Get.snackbar(
+        'Login required',
+        'Login or Signup first please.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
+      return; // ne menjam tab
+    }
+
     currentIndex.value = index;
   }
 }

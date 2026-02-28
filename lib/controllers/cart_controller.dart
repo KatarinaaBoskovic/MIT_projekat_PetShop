@@ -238,6 +238,17 @@ class CartController extends GetxController {
   // Remove item from cart
   Future<bool> removeFromCart(String cartItemId) async {
     try {
+      final userId = _userId;
+      if (userId == null) {
+        Get.snackbar(
+          'Authentication Required',
+          'Please sign in to manage your cart',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+        return false;
+      }
+
       final success = await CartFirestoreService.removeCartItem(cartItemId);
 
       if (success) {

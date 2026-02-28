@@ -110,6 +110,28 @@ class SinginScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              // continue as guest button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _continueAsGuest,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(color: Theme.of(context).primaryColor),
+                  ),
+                  child: Text(
+                    'Continue as Guest',
+                    style: AppTextStyle.withColor(
+                      AppTextStyle.buttonMedium,
+                      Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               //siggup textbutton
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -138,6 +160,13 @@ class SinginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _continueAsGuest() {
+    final nav = Get.find<NavigationController>();
+    nav.currentIndex.value = 0;
+
+    Get.offAll(() => const MainScreen());
   }
 
   //sign in button onpressed

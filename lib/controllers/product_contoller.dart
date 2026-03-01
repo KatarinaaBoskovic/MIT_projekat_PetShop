@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:petshop/models/product.dart';
 import 'package:petshop/services/product_firestore_service.dart';
@@ -21,6 +23,8 @@ class ProductController extends GetxController {
   final RxDouble _minPrice = 0.0.obs;
   final RxDouble _maxPrice = double.infinity.obs;
 
+  StreamSubscription<List<Product>>? _productsSub;
+
   // Getters
   List<Product> get allProducts => _allProducts;
   List<Product> get filteredProducts => _filteredProducts;
@@ -41,8 +45,8 @@ class ProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _selectedCategory.value = 'All'; // initialize with 'All' selected
-    loadProducts();
+    _selectedCategory.value = 'All';
+    _listenProductsRealtime();
   }
 
   // Load all products from Firestore
@@ -301,5 +305,40 @@ class ProductController extends GetxController {
 
     // otherwise, show filtered products
     return _filteredProducts;
+  }
+
+  void _listenProductsRealtime() {
+    _isLoading.value = true;
+    update();
+
+    _productsSub?.cancel();
+    _productsSub = ProductFirestoreService.getProductsStream().listen(
+      (products) async {
+        _allProducts.value = products;
+        _applyFilters();
+
+        await _loadFeaturedProducts();
+        await _loadSaleProducts();
+        await _loadCategories();
+
+        _isLoading.value = false;
+        _hasError.value = false;
+        _errorMessage.value = '';
+        update();
+      },
+      onError: (e) {
+        _isLoading.value = false;
+        _hasError.value = true;
+        _errorMessage.value = 'Failed to load products. Please try again.';
+        update();
+        print('Realtime products error: $e');
+      },
+    );
+  }
+
+  @override
+  void onClose() {
+    _productsSub?.cancel();
+    super.onClose();
   }
 }

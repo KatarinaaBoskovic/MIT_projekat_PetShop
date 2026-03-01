@@ -31,16 +31,14 @@ class OrderSummaryCard extends StatelessWidget {
         final currencyCtrl = Get.find<CurrencyController>();
         final currency = currencyCtrl.selectedCurrency.value;
 
-        final subtotalRsd = cart.total.toDouble();
-
-        const shippingRsd = 130.0;
-        const taxRsd = 0.0;
-
-        final totalRsd = subtotalRsd + shippingRsd + taxRsd;
+        final subtotalRsd = cart.subtotal;
+        final savingsRsd = cart.savings;
+        final shippingRsd = cart.shipping;
+        final totalRsd = cart.total;
 
         final subtotal = currencyCtrl.convertFromRsd(subtotalRsd, currency);
+        final savings = currencyCtrl.convertFromRsd(savingsRsd, currency);
         final shipping = currencyCtrl.convertFromRsd(shippingRsd, currency);
-        final tax = currencyCtrl.convertFromRsd(taxRsd, currency);
         final total = currencyCtrl.convertFromRsd(totalRsd, currency);
 
         return Column(
@@ -51,16 +49,20 @@ class OrderSummaryCard extends StatelessWidget {
               currencyCtrl.format(subtotal, currency),
             ),
             const SizedBox(height: 8),
+
+            if (savingsRsd > 0) ...[
+              _buildSummaryRow(
+                context,
+                'Savings',
+                '- ${currencyCtrl.format(savings, currency)}',
+              ),
+              const SizedBox(height: 8),
+            ],
+
             _buildSummaryRow(
               context,
               'Shipping',
               currencyCtrl.format(shipping, currency),
-            ),
-            const SizedBox(height: 8),
-            _buildSummaryRow(
-              context,
-              'Tax',
-              currencyCtrl.format(tax, currency),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
@@ -91,6 +93,7 @@ class OrderSummaryCard extends StatelessWidget {
         : Theme.of(context).textTheme.bodyLarge!.color!;
 
     return Row(
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: AppTextStyle.withColor(textStyle, color)),

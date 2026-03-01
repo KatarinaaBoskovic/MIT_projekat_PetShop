@@ -32,14 +32,14 @@ class AppImage extends StatelessWidget {
               if (progress == null) return child;
               return const Center(child: CircularProgressIndicator());
             },
-            errorBuilder: (_, __, ___) => _placeholder(),
+            errorBuilder: (context, error, stackTrace) => _placeholder(),
           )
         : Image.asset(
             path,
             width: width,
             height: height,
             fit: fit,
-            errorBuilder: (_, __, ___) => _placeholder(),
+            errorBuilder: (context, error, stackTrace) => _placeholder(),
           );
   }
 

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/models/cart_item.dart';
@@ -38,34 +39,31 @@ class CartController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _shipping.value = 130.0;
     loadCartItems();
     _listenToAuthChanges();
   }
 
   // Listen to authentication changes
-  void _listenToAuthChanges() {
-    final authController = Get.find<AuthController>();
-
-    // Listen to auth state changes
-    ever(authController.isLoggedIn.obs, (bool isLoggedIn) {
-      if (isLoggedIn) {
-        // User signed in, load their cart
-        loadCartItems();
-      } else {
-        // User signed out, clear cart
-        _cartItems.clear();
-        _itemCount.value = 0;
-        _resetTotals();
-        update();
-      }
-    });
-  }
+void _listenToAuthChanges() {
+  FirebaseAuth.instance.authStateChanges().listen((user) {
+    if (user != null) {
+      loadCartItems();
+    } else {
+      _cartItems.clear();
+      _itemCount.value = 0;
+      _resetTotals();
+      update();
+    }
+  });
+}
 
   // Reset cart totals
   void _resetTotals() {
     _subtotal.value = 0.0;
     _savings.value = 0.0;
-    _total.value = _shipping.value;
+    _shipping.value = 130.0;
+    _total.value = 0.0;
   }
 
   // Load cart items from Firestore
@@ -112,7 +110,7 @@ class CartController extends GetxController {
     _subtotal.value = subtotal;
     _savings.value = savings;
     _itemCount.value = totalItems;
-    _total.value = subtotal + _shipping.value;
+    _total.value = _subtotal.value + _shipping.value;
   }
 
   // Add product to cart

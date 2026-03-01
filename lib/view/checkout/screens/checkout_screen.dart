@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:petshop/controllers/auth_controller.dart';
 import 'package:petshop/controllers/cart_controller.dart';
+import 'package:petshop/services/cart_firestore_service.dart';
+import 'package:petshop/services/orders_firestore_service.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/checkout/widgets/address_card.dart';
 import 'package:petshop/view/checkout/widgets/checkout_bottom_bar.dart';
@@ -55,16 +58,50 @@ class CheckoutScreen extends StatelessWidget {
         builder: (cart) {
           return CheckoutBottomBar(
             totalAmount: cart.total,
-            onPlaceOrder: () {
-              final orderNumber =
-                  'ORD${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+            onPlaceOrder: () async {
+              final auth = Get.find<AuthController>();
+              final userId = auth.user?.uid;
+              final totalBeforeClear = cart.total;
+              final email = auth.user?.email;
+              if (userId == null || email == null) {
+                Get.snackbar('Error', 'Missing user data');
+                return;
+              }
 
-              Get.to(
-                () => OrderConfirmationScreen(
-                  orderNumber: orderNumber,
-                  totalAmount: cart.total,
-                ),
-              );
+              if (cart.cartItems.isEmpty) {
+                Get.snackbar(
+                  'Cart is empty',
+                  'Add products to your cart first',
+                );
+                return;
+              }
+
+              try {
+                final orderId =
+                    await OrdersFirestoreService.createOrderFromCart(
+                      userId: userId,
+                      userEmail: email,
+                      cartItems: cart.cartItems,
+                      subtotal: cart.subtotal,
+                      savings: cart.savings,
+                      shipping: cart.shipping,
+                      total: cart.total,
+                      // shippingAddress: ??? (kad povežem AddressCard)
+                    );
+
+                await CartFirestoreService.clearUserCart(userId);
+                await cart.loadCartItems();
+
+                Get.off(
+                  () => OrderConfirmationScreen(
+                    orderNumber: orderId,
+                    totalAmount: totalBeforeClear,
+                  ),
+                );
+              } catch (e) {
+                debugPrint('PLACE ORDER ERROR: $e');
+                Get.snackbar('Error', e.toString());
+              }
             },
           );
         },

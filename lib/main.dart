@@ -30,8 +30,11 @@ void main() async {
   Get.put(AddressController());
   Get.put(CurrencyController());
 
-  //seed sample data to firestore for testing only
-  await FirestoreDataSeeder.seedAllData();
+  // seed sample data to firestore for testing only
+  assert(() {
+    FirestoreDataSeeder.seedAllData();
+    return true;
+  }());
   runApp(const MyApp());
 }
 

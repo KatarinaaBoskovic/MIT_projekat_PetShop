@@ -58,10 +58,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                         color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),
                     )
-                  : Icon(
-                      Icons.tune,
-                      color: isDark ? Colors.grey[400] : Colors.grey[100],
-                    );
+                  : const SizedBox(width: 24);
             },
           ),
           filled: true,

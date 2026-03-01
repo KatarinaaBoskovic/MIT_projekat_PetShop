@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/utils/app_textstyles.dart';
 import 'package:petshop/view/my_orders/model/order.dart';
 
@@ -16,6 +18,15 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currencyCtrl = Get.find<CurrencyController>();
+    final currency = currencyCtrl.selectedCurrency.value;
+
+    final convertedTotal = currencyCtrl.convertFromRsd(order.total, currency);
+    final totalText = currencyCtrl.format(convertedTotal, currency);
+
+    final dateText = order.createdAt == null
+        ? 'Just now'
+        : DateFormat('dd.MM.yyyy • HH:mm').format(order.createdAt!);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -43,10 +54,12 @@ class OrderCard extends StatelessWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: AssetImage(order.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
+                    color: isDark ? Colors.white10 : Colors.black12,
+                  ),
+                  child: Icon(
+                    Icons.receipt_long,
+                    size: 36,
+                    color: isDark ? Colors.white70 : Colors.black54,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -55,23 +68,24 @@ class OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Order # ${order.orderNumber}',
+                        'Order # ${order.id}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTextStyle.withColor(
                           AppTextStyle.h3,
                           Theme.of(context).textTheme.bodyLarge!.color!,
                         ),
                       ),
                       const SizedBox(height: 4),
-
                       Text(
-                        '${order.itemCount} items • ${order.totalAmount.toStringAsFixed(0)} RSD',
+                        '$dateText • $totalText',
                         style: AppTextStyle.withColor(
                           AppTextStyle.bodyMedium,
                           isDark ? Colors.grey[400]! : Colors.grey[600]!,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _buildStatusChip(context, order.statusString),
+                      _buildStatusChip(context, order.status),
                     ],
                   ),
                 ),
@@ -97,29 +111,47 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(BuildContext context, String type) {
-    Color getStatusColor() {
-      switch (type) {
-        case 'active':
-          return Colors.blue;
-        case 'completed':
-          return Colors.green;
-        case 'cancelled':
-          return Colors.red;
-        default:
-          return Colors.grey;
-      }
+  Widget _buildStatusChip(BuildContext context, String statusRaw) {
+    final s = statusRaw.toLowerCase();
+
+    Color color;
+    String label;
+
+    switch (s) {
+      case 'pending':
+        color = Colors.orange;
+        label = 'Pending';
+        break;
+      case 'processing':
+        color = Colors.blue;
+        label = 'Processing';
+        break;
+      case 'shipped':
+        color = Colors.indigo;
+        label = 'Shipped';
+        break;
+      case 'delivered':
+        color = Colors.green;
+        label = 'Delivered';
+        break;
+      case 'cancelled':
+        color = Colors.red;
+        label = 'Cancelled';
+        break;
+      default:
+        color = Colors.grey;
+        label = statusRaw.isEmpty ? 'Unknown' : statusRaw.capitalize!;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: getStatusColor().withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        type.capitalize!,
-        style: AppTextStyle.withColor(AppTextStyle.bodySmall, getStatusColor()),
+        label,
+        style: AppTextStyle.withColor(AppTextStyle.bodySmall, color),
       ),
     );
   }

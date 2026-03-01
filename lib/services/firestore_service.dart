@@ -20,6 +20,10 @@ class FirestoreService {
         'email': email,
         'name': name,
         'displayName': name,
+
+        'role': 'user',
+        'blocked': false,
+
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'isActive': true,
@@ -37,8 +41,10 @@ class FirestoreService {
         },
       };
 
-      await _firestore.collection(_usersCollection).doc(uid).set(userData);
-
+      await _firestore
+          .collection(_usersCollection)
+          .doc(uid)
+          .set(userData, SetOptions(merge: true));
       return true;
     } catch (e) {
       return false;
@@ -224,6 +230,95 @@ class FirestoreService {
       return true;
     } catch (e) {
       print('Error updating currency: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> ensureUserDocument({
+    required String uid,
+    required String email,
+    required String name,
+  }) async {
+    try {
+      final ref = _firestore.collection(_usersCollection).doc(uid);
+      final snap = await ref.get();
+
+      if (!snap.exists) {
+        final userData = {
+          'uid': uid,
+          'email': email,
+          'name': name,
+          'displayName': name,
+          'role': 'user',
+          'blocked': false,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'addresses': [],
+          'preferences': {
+            'notifications': true,
+            'emailUpdates': true,
+            'darkMode': false,
+            'currency': 'RSD',
+          },
+        };
+
+        await ref.set(userData, SetOptions(merge: true));
+      } else {
+        final data = snap.data() ?? {};
+        final patch = <String, dynamic>{
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        if (!data.containsKey('role')) patch['role'] = 'user';
+        if (!data.containsKey('blocked')) patch['blocked'] = false;
+
+        await ref.set(patch, SetOptions(merge: true));
+      }
+
+      return true;
+    } catch (e) {
+      print('ensureUserDocument error: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> isUserBlocked(String uid) async {
+    try {
+      final doc = await _firestore.collection(_usersCollection).doc(uid).get();
+      final data = doc.data();
+      return data?['blocked'] == true;
+    } catch (e) {
+      print('isUserBlocked error: $e');
+      return false;
+    }
+  }
+
+  // Stream svih korisnika (admin)
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUsersStream() {
+    return _firestore
+        .collection(_usersCollection)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  // Admin update korisnika: blocked/role (i sl.)
+  static Future<bool> adminUpdateUser({
+    required String uid,
+    bool? blocked,
+    String? role,
+  }) async {
+    try {
+      final data = <String, dynamic>{'updatedAt': FieldValue.serverTimestamp()};
+      if (blocked != null) data['blocked'] = blocked;
+      if (role != null) data['role'] = role;
+
+      await _firestore
+          .collection(_usersCollection)
+          .doc(uid)
+          .set(data, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      print('adminUpdateUser error: $e');
       return false;
     }
   }

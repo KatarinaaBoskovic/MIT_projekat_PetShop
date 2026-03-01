@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_print
-
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -7,6 +7,8 @@ import 'package:petshop/controllers/address_controller.dart';
 import 'package:petshop/controllers/currency_controller.dart';
 import 'package:petshop/services/firebase_auth_service.dart';
 import 'package:petshop/services/firestore_service.dart';
+
+enum PostLoginResult { user, admin, blocked, failed }
 
 class AuthController extends GetxController {
   final _storage = GetStorage();
@@ -19,6 +21,14 @@ class AuthController extends GetxController {
     null,
   );
   final RxBool avatarChanged = false.obs;
+
+  final RxBool _isBlocked = false.obs;
+  final RxString _role = 'user'.obs;
+  final RxString authNotice = ''.obs;
+
+  bool get isBlocked => _isBlocked.value;
+  String get role => _role.value;
+  bool get isAdmin => _role.value == 'admin';
 
   bool get isFirstTime => _isFirstTime.value;
   bool get isLoggedIn => _isLoggedIn.value;
@@ -35,6 +45,11 @@ class AuthController extends GetxController {
       _userDocument.value?['preferences'];
   int get avatarId => (_userDocument.value?['avatarId'] as int?) ?? 0;
   final RxString userCurrencyRx = 'RSD'.obs;
+  void clearBlockedFlag() => _isBlocked.value = false;
+  final RxBool _blockedNotice = false.obs;
+  bool get blockedNotice => _blockedNotice.value;
+
+  void clearBlockedNotice() => _blockedNotice.value = false;
 
   String get userCurrency => userCurrencyRx.value;
   @override
@@ -53,57 +68,195 @@ class AuthController extends GetxController {
 
     // Load user document if user is already signed in
     if (_user.value != null) {
-      _loadUserDocument(_user.value!.uid);
+      Future.microtask(() async {
+        await _syncUserAfterLogin(_user.value!);
+      });
     }
   }
 
   // Load user document from Firestore
-  Future<void> _loadUserDocument(String uid) async {
+  Future<bool> _loadUserDocument(String uid) async {
     try {
       final userDoc = await FirestoreService.getUserDocument(uid);
 
+      if (userDoc == null) {
+        _userDocument.value = null;
+        _role.value = 'user';
+        _isBlocked.value = false;
+        return false;
+      }
+
       _userDocument.value = userDoc;
+      _role.value = (userDoc['role'] as String?) ?? 'user';
+      _isBlocked.value = userDoc['blocked'] == true;
 
       final cur =
-          (userDoc?['preferences']?['currency'] as String?)?.toUpperCase() ??
+          (userDoc['preferences']?['currency'] as String?)?.toUpperCase() ??
           'RSD';
-
       userCurrencyRx.value = cur;
 
       if (Get.isRegistered<CurrencyController>()) {
         Get.find<CurrencyController>().setCurrency(cur);
       }
+
+      return true;
     } catch (e) {
       print('Error loading user document: $e');
+      _userDocument.value = null;
+      _role.value = 'user';
+      _isBlocked.value = false;
+      return false;
+    }
+  }
+
+  Future<bool> _syncUserAfterLogin(User user) async {
+    try {
+      final email = user.email ?? '';
+      final name = user.displayName ?? 'User';
+
+      await FirestoreService.ensureUserDocument(
+        uid: user.uid,
+        email: email,
+        name: name,
+      );
+
+      await _loadUserDocument(user.uid); // ovde se setuju _role i _isBlocked
+
+      final blockedNow = _isBlocked.value == true;
+
+      if (blockedNow) {
+        await FirebaseAuthService.signOut();
+
+        _user.value = null;
+        _isLoggedIn.value = false;
+        _userDocument.value = null;
+
+        _isBlocked.value = true;
+        _role.value = 'user';
+
+        userCurrencyRx.value = 'RSD';
+        if (Get.isRegistered<CurrencyController>()) {
+          Get.find<CurrencyController>().setCurrency('RSD');
+        }
+      }
+
+      return blockedNow;
+    } catch (e) {
+      print('Error syncing user after login: $e');
+      return false;
     }
   }
 
   void _listenToAuthChanges() {
-    FirebaseAuthService.authStateChanges.listen((User? user) {
+    FirebaseAuthService.authStateChanges.listen((User? user) async {
       _user.value = user;
       _isLoggedIn.value = user != null;
 
       if (user != null) {
-        // Load user document from Firestore
-        _loadUserDocument(user.uid);
-        // Reset address controller to load addresses for the new user
+        Map<String, dynamic>? doc;
+        try {
+          doc = await FirestoreService.getUserDocument(
+            user.uid,
+          ).timeout(const Duration(seconds: 5), onTimeout: () => null);
+        } catch (e) {
+          doc = null;
+        }
+
+        if (doc == null) {
+          await FirebaseAuthService.signOut();
+
+          _user.value = null;
+          _isLoggedIn.value = false;
+          _userDocument.value = null;
+          _isBlocked.value = false;
+          _role.value = 'user';
+
+          if (Get.isRegistered<CurrencyController>()) {
+            Get.find<CurrencyController>().setCurrency('RSD');
+          }
+          userCurrencyRx.value = 'RSD';
+
+          if (Get.isRegistered<AddressController>()) {
+            Get.find<AddressController>().loadAddresses();
+          }
+
+          return;
+        }
+
+        _userDocument.value = doc;
+        _role.value = (doc['role'] as String?) ?? 'user';
+        _isBlocked.value = doc['blocked'] == true;
+
+        final cur =
+            (doc['preferences']?['currency'] as String?)?.toUpperCase() ??
+            'RSD';
+        userCurrencyRx.value = cur;
+        if (Get.isRegistered<CurrencyController>()) {
+          Get.find<CurrencyController>().setCurrency(cur);
+        }
+
+        //  blokiran -> odmah odjavi + poruka + reset state
+        if (_isBlocked.value == true) {
+          authNotice.value =
+              'Your account has been blocked. Contact support.'; // ✅ PRVO
+          await FirebaseAuthService.signOut(); // ✅ ONDA signOut
+          return;
+        }
+
         if (Get.isRegistered<AddressController>()) {
           Get.find<AddressController>().loadAddresses();
         }
       } else {
-        // Clear user document when signed out
         _userDocument.value = null;
+        _isBlocked.value = false;
+        _role.value = 'user';
+
         if (Get.isRegistered<CurrencyController>()) {
           Get.find<CurrencyController>().setCurrency('RSD');
         }
         userCurrencyRx.value = 'RSD';
 
-        // Reset address controller when user logs out
         if (Get.isRegistered<AddressController>()) {
           Get.find<AddressController>().loadAddresses();
         }
       }
     });
+  }
+
+  Future<PostLoginResult> resolvePostLogin({
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    final completer = Completer<PostLoginResult>();
+
+    late Worker w1;
+    late Worker w2;
+
+    void finish(PostLoginResult r) {
+      if (!completer.isCompleted) completer.complete(r);
+      w1.dispose();
+      w2.dispose();
+    }
+
+    w1 = ever<Map<String, dynamic>?>(_userDocument, (doc) {
+      if (doc == null) return;
+
+      final blocked = doc['blocked'] == true;
+      final role = (doc['role'] as String?) ?? 'user';
+
+      if (blocked) return finish(PostLoginResult.blocked);
+      if (role == 'admin') return finish(PostLoginResult.admin);
+      return finish(PostLoginResult.user);
+    });
+
+    w2 = ever<bool>(_isLoggedIn, (logged) {
+      if (!logged) finish(PostLoginResult.failed);
+    });
+
+    Future.delayed(timeout, () {
+      if (!completer.isCompleted) finish(PostLoginResult.failed);
+    });
+
+    return completer.future;
   }
 
   void setFirstTimeDone() {
@@ -128,10 +281,7 @@ class AuthController extends GetxController {
 
       // If signup is successful, load user document immediately
       if (result.success && result.user != null) {
-        // Add a small delay to ensure Firestore document is fully created
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        await _loadUserDocument(result.user!.uid);
+        await _syncUserAfterLogin(result.user!);
       }
 
       return result;
@@ -148,17 +298,38 @@ class AuthController extends GetxController {
     _isLoading.value = true;
 
     try {
+      // Firebase auth
       final result = await FirebaseAuthService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // If sign-in is successful, load user document immediately
-      if (result.success && result.user != null) {
-        await _loadUserDocument(result.user!.uid);
+      if (!result.success || result.user == null) return result;
+
+      final doc = await FirestoreService.getUserDocument(
+        result.user!.uid,
+      ).timeout(const Duration(seconds: 5), onTimeout: () => null);
+
+      final blocked = doc?['blocked'] == true;
+
+      if (blocked) {
+        const msg = 'Your account has been blocked. Contact support.';
+        authNotice.value = msg;
+        await FirebaseAuthService.signOut();
+        return AuthResult(success: false, user: null, message: msg);
       }
 
+      _userDocument.value = doc;
+      _role.value = (doc?['role'] as String?) ?? 'user';
+      _isBlocked.value = false;
+
       return result;
+    } catch (e) {
+      return AuthResult(
+        success: false,
+        message: 'Login failed. Please try again.',
+        user: null,
+      );
     } finally {
       _isLoading.value = false;
     }

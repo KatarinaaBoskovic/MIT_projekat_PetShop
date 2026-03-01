@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petshop/controllers/auth_controller.dart';
+import 'package:petshop/view/admin/admin_main_screen.dart';
 import 'package:petshop/view/main_screen.dart';
 import 'package:petshop/view/onboarding_screen.dart';
 import 'package:petshop/view/singin_screen.dart';
@@ -13,25 +14,103 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final AuthController authController = Get.find<AuthController>();
+  late final AuthController auth;
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeApp();
+    auth = Get.find<AuthController>();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _route();
+    });
   }
 
-  void _initializeApp() async {
-    // Wait for Firebase auth state to be determined
-    await Future.delayed(const Duration(milliseconds: 2500));
+  Future<void> _route() async {
+    if (!mounted || _navigated) return;
 
-    // Navigate based on auth state
-    if (authController.isFirstTime) {
-      Get.off(() => const OnboardingScreen());
-    } else if (authController.isLoggedIn) {
-      Get.off(() => const MainScreen());
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted || _navigated) return;
+
+    // onboarding
+    if (auth.isFirstTime) {
+      _navigated = true;
+      Get.offAll(() => const OnboardingScreen());
+      return;
+    }
+
+    // ako NIJE ulogovan - login
+    if (!auth.isLoggedIn) {
+      _navigated = true;
+      Get.offAll(() => const SinginScreen());
+
+      final msg = auth.authNotice.value.trim();
+      if (msg.isNotEmpty) {
+        auth.authNotice.value = '';
+        Future.delayed(const Duration(milliseconds: 250), () {
+          Get.snackbar(
+            'Account blocked',
+            msg,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        });
+      }
+      return;
+    }
+
+    //Ulogovan je- čeka da userDocument stigne
+    final deadline = DateTime.now().add(const Duration(seconds: 3));
+
+    while (!_navigated && mounted) {
+      if (!auth.isLoggedIn) {
+        _navigated = true;
+        Get.offAll(() => const SinginScreen());
+
+        final msg = auth.authNotice.value.trim();
+        if (msg.isNotEmpty) {
+          auth.authNotice.value = '';
+          Future.delayed(const Duration(milliseconds: 250), () {
+            Get.snackbar(
+              'Account blocked',
+              msg,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
+          });
+        }
+        return;
+      }
+
+      if (auth.userDocument != null) break;
+
+      if (DateTime.now().isAfter(deadline)) {
+        _navigated = true;
+        Get.offAll(() => const SinginScreen());
+        Get.snackbar(
+          'Error',
+          'Unable to load your account data. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 120));
+    }
+
+    if (!mounted || _navigated) return;
+
+    //admin ili user
+    _navigated = true;
+    if (auth.isAdmin) {
+      Get.offAll(() => const AdminMainScreen());
     } else {
-      Get.off(() => SinginScreen());
+      Get.offAll(() => const MainScreen());
     }
   }
 
@@ -52,20 +131,16 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         child: Stack(
           children: [
-            //background pattern
             const Positioned.fill(
               child: Opacity(
                 opacity: 0.05,
                 child: GridPattern(color: Colors.white),
               ),
             ),
-
-            //main content
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //animated logo container
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
                     duration: const Duration(milliseconds: 1200),
@@ -96,7 +171,6 @@ class _SplashScreenState extends State<SplashScreen> {
                     },
                   ),
                   const SizedBox(height: 32),
-                  //animated text
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
                     duration: const Duration(milliseconds: 1200),
@@ -110,7 +184,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       );
                     },
                     child: Column(
-                      children: [
+                      children: const [
                         Text(
                           "PET",
                           style: TextStyle(
@@ -135,7 +209,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 ],
               ),
             ),
-            //bottom tagline
             Positioned(
               bottom: 48,
               left: 0,
@@ -167,7 +240,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
 class GridPattern extends StatelessWidget {
   final Color color;
-  const GridPattern({Key? key, required this.color}) : super(key: key);
+  const GridPattern({super.key, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -183,11 +256,10 @@ class GridPainter extends CustomPainter {
     final paint = Paint()
       ..color = color
       ..strokeWidth = 0.5;
-    final spacing = 20.0;
+    const spacing = 20.0;
     for (var i = 0.0; i < size.width; i += spacing) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
     }
-
     for (var i = 0.0; i < size.height; i += spacing) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }

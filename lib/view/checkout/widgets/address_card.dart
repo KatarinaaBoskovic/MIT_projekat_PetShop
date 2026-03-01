@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:petshop/utils/app_textstyles.dart';
+import 'package:petshop/view/shipping_address/models/address.dart'
+    as my_address;
 
 class AddressCard extends StatelessWidget {
-  const AddressCard({super.key});
+  //obavezno polje za adresu
+  final my_address.Address address;
+
+  const AddressCard({
+    super.key,
+    required this.address, //Zahteva adresu pri kreiranju
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +45,8 @@ class AddressCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Home',
+                      //Koristi labelu iz objekta (npr. Home, Work...)
+                      address.label,
                       style: AppTextStyle.withColor(
                         AppTextStyle.bodyLarge,
                         Theme.of(context).textTheme.bodyLarge!.color!,
@@ -45,7 +54,8 @@ class AddressCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '123 Main Street, Apt 48\nNew York, NY 10001',
+                      //Koristi stvarnu adresu iz baze
+                      address.fullAddress,
                       style: AppTextStyle.withColor(
                         AppTextStyle.bodySmall,
                         isDark ? Colors.grey[400]! : Colors.grey[600]!,
@@ -54,12 +64,10 @@ class AddressCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.edit_outlined,
-                  color: Theme.of(context).primaryColor,
-                ),
+              Icon(
+                Icons.check_circle,
+                color: Theme.of(context).primaryColor,
+                size: 20,
               ),
             ],
           ),

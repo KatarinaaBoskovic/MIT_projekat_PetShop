@@ -55,13 +55,8 @@ class OrderConfirmationScreen extends StatelessWidget {
                 final currencyCtrl = Get.find<CurrencyController>();
                 final currency = currencyCtrl.selectedCurrency.value;
 
-                final converted = currencyCtrl.convertFromRsd(
-                  totalAmount,
-                  currency,
-                );
-
                 return Text(
-                  'Total: ${currencyCtrl.format(converted, currency)}',
+                  'Total: ${currencyCtrl.format(totalAmount, currency)}',
                   textAlign: TextAlign.center,
                   style: AppTextStyle.withColor(
                     AppTextStyle.h3,

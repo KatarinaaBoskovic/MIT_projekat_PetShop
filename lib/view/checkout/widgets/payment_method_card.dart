@@ -23,49 +23,41 @@ class PaymentMethodCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(8),
+          // Ikonica kartice/plaćanja
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.credit_card_rounded,
+              color: Theme.of(context).primaryColor,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Credit or Debit Card',
+                  style: AppTextStyle.withColor(
+                    AppTextStyle.h4,
+                    Theme.of(context).textTheme.bodyLarge!.color!,
+                  ),
                 ),
-                child: Image.asset('assets/images/mastercard.png', height: 24),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Visa ending in 4242',
-                      style: AppTextStyle.withColor(
-                        AppTextStyle.bodyLarge,
-                        Theme.of(context).textTheme.bodyLarge!.color!,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Expires 12/26',
-                      style: AppTextStyle.withColor(
-                        AppTextStyle.bodySmall,
-                        isDark ? Colors.grey[400]! : Colors.grey[600]!,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.edit_outlined,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
+                const SizedBox(height: 2),
+              ],
+            ),
+          ),
+          // Indikator da je ovo jedina/selektovana opcija
+          Icon(
+            Icons.check_circle_rounded,
+            color: Theme.of(context).primaryColor,
           ),
         ],
       ),

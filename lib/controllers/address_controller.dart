@@ -140,4 +140,11 @@ class AddressController extends GetxController {
       update();
     }
   }
+
+  final Rxn<Address> selectedAddress = Rxn<Address>();
+
+  void selectAddress(Address address) {
+    selectedAddress.value = address;
+    update();
+  }
 }

@@ -15,9 +15,11 @@ import 'package:petshop/controllers/wishlist_controller.dart';
 import 'package:petshop/firebase_options.dart';
 import 'package:petshop/utils/app_themes.dart';
 import 'package:petshop/view/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,

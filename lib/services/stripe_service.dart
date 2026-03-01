@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,8 +7,7 @@ import 'package:petshop/view/shipping_address/models/address.dart'
     as my_address;
 
 class StripeService {
-  static String secretKey =
-      "";
+  static String secretKey = dotenv.env['STRIPE_SECRET_KEY'] ?? "";
 
   // Funkcija za proračun iznosa na osnovu valute
   static int calculateAmount(double amount, String currency) {
